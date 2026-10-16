@@ -10,7 +10,7 @@ class VideoUploadSession extends Model
     protected $fillable = [
         'uuid', 'uploaded_by', 'experience_id', 'media_asset_id', 'title', 'alt_text',
         'original_name', 'declared_mime', 'total_size', 'chunk_size', 'total_chunks',
-        'received_chunks', 'status', 'expires_at',
+        'received_chunks', 'chunk_hashes', 'status', 'expires_at',
     ];
 
     protected function casts(): array

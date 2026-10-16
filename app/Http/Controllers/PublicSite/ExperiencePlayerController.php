@@ -6,11 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Experience;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\View\View;
 
 class ExperiencePlayerController extends Controller
 {
-    public function show(Request $request, string $publicId, ?string $slug = null): View|RedirectResponse
+    public function show(Request $request, string $publicId, ?string $slug = null): Response|View|RedirectResponse
     {
         $experience = Experience::query()
             ->publiclyAvailable()

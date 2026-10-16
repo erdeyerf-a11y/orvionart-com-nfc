@@ -25,7 +25,7 @@ class VideoChunkUploadTest extends TestCase
         ]);
     }
 
-    private function session(User $admin, array $overrides = []): VideoUploadSession
+    private function uploadSession(User $admin, array $overrides = []): VideoUploadSession
     {
         return VideoUploadSession::create(array_merge([
             'uuid' => (string) \Illuminate\Support\Str::uuid(),
@@ -86,7 +86,7 @@ class VideoChunkUploadTest extends TestCase
     {
         Storage::fake('local');
         $admin = $this->admin();
-        $session = $this->session($admin);
+        $session = $this->uploadSession($admin);
 
         $this->actingAs($admin)->post(route('admin.video-uploads.chunk', ['upload' => $session->id, 'index' => 0]), [
             'chunk' => UploadedFile::fake()->createWithContent('chunk.part', 'abc'),
@@ -101,7 +101,7 @@ class VideoChunkUploadTest extends TestCase
             'chunk' => UploadedFile::fake()->createWithContent('chunk.part', 'xyz'),
         ], ['X-Chunk-SHA256' => hash('sha256', 'xyz')])->assertStatus(409);
 
-        $other = $this->session($admin, ['uuid' => (string) \Illuminate\Support\Str::uuid(), 'total_size' => 4]);
+        $other = $this->uploadSession($admin, ['uuid' => (string) \Illuminate\Support\Str::uuid(), 'total_size' => 4]);
         $this->actingAs($admin)->post(route('admin.video-uploads.chunk', ['upload' => $other->id, 'index' => 0]), [
             'chunk' => UploadedFile::fake()->createWithContent('chunk.part', 'abc'),
         ], ['X-Chunk-SHA256' => hash('sha256', 'abc')])->assertUnprocessable();
@@ -111,7 +111,7 @@ class VideoChunkUploadTest extends TestCase
     {
         Storage::fake('local');
         $admin = $this->admin();
-        $session = $this->session($admin);
+        $session = $this->uploadSession($admin);
 
         $this->actingAs($admin)->post(route('admin.video-uploads.chunk', ['upload' => $session->id, 'index' => 0]), [
             'chunk' => UploadedFile::fake()->createWithContent('chunk.part', 'abc'),
@@ -125,7 +125,7 @@ class VideoChunkUploadTest extends TestCase
     {
         Storage::fake('local');
         $admin = $this->admin();
-        $session = $this->session($admin);
+        $session = $this->uploadSession($admin);
         Storage::disk('local')->put($session->chunkDirectory().'/chunk-0000.part', 'abc');
         $session->forceFill(['received_chunks' => [0]])->save();
 
@@ -141,7 +141,7 @@ class VideoChunkUploadTest extends TestCase
     {
         $owner = $this->admin();
         $other = $this->admin('other-video-admin@example.test');
-        $session = $this->session($owner);
+        $session = $this->uploadSession($owner);
 
         $this->actingAs($other)
             ->getJson(route('admin.video-uploads.status', $session))
@@ -151,7 +151,7 @@ class VideoChunkUploadTest extends TestCase
     public function test_video_upload_cannot_be_completed_before_all_chunks_arrive(): void
     {
         $admin = $this->admin();
-        $session = $this->session($admin, ['total_size' => 4 * 1024 * 1024 + 1, 'total_chunks' => 2]);
+        $session = $this->uploadSession($admin, ['total_size' => 4 * 1024 * 1024 + 1, 'total_chunks' => 2]);
 
         $this->actingAs($admin)
             ->postJson(route('admin.video-uploads.complete', $session))

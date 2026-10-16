@@ -38,7 +38,7 @@ Route::get('/p/{publicId}/{slug?}', [ExperiencePlayerController::class, 'show'])
 Route::get('/sitemap.xml', [SitePageController::class, 'sitemap'])->name('sitemap');
 
 Route::get('/robots.txt', function () {
-    $indexingEnabled = app()->environment('production') && (bool) config('orvionart.public_indexing_enabled', false);
+    $indexingEnabled = config('app.env') === 'production' && (bool) config('orvionart.public_indexing_enabled', false);
     $body = $indexingEnabled
         ? "User-agent: *\nAllow: /\nSitemap: " . route('sitemap') . "\n"
         : "User-agent: *\nDisallow: /\n";

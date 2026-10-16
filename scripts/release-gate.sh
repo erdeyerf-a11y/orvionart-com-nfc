@@ -191,13 +191,13 @@ else
 fi
 
 if [[ -f "$ROOT/vendor/autoload.php" && -f "$ROOT/artisan" ]]; then
-  if (cd "$ROOT" && php artisan test --no-interaction); then pass 'Laravel test paketi'; else fail 'Laravel testleri başarısız'; fi
+  if (cd "$ROOT" && php artisan test); then pass 'Laravel test paketi'; else fail 'Laravel testleri başarısız'; fi
 else
   if [[ "$STRICT" -eq 1 ]]; then fail 'Strict modda vendor/autoload.php ve artisan test ortamı zorunlu'; else warn 'vendor/autoload.php yok; Laravel runtime/feature testleri çalıştırılmadı'; fi
 fi
 
 echo ""
-if grep -q "!app()->environment('production') || \$page->published_noindex" "$ROOT/app/Http/Controllers/PublicSite/SitePageController.php" && grep -q 'test_public_site_builder_page_is_noindex_outside_production_even_when_page_allows_indexing' "$ROOT/tests/Feature/SiteBuilderTest.php" && [[ -f "$ROOT/docs/STAGING_PUBLIC_SITE_NOINDEX_0_10_49.md" ]]; then
+if grep -q "config('app.env') !== 'production'" "$ROOT/app/Http/Controllers/PublicSite/SitePageController.php" && grep -q 'test_public_site_builder_page_is_noindex_outside_production_even_when_page_allows_indexing' "$ROOT/tests/Feature/SiteBuilderTest.php" && [[ -f "$ROOT/docs/STAGING_PUBLIC_SITE_NOINDEX_0_10_49.md" ]]; then
     pass 'Site Builder staging sayfaları noindex koruması, regresyon kaynağı ve belge mevcut'
 else
     fail 'Site Builder staging noindex koruması eksik'
@@ -434,4 +434,3 @@ echo "ÖZET PASS=$PASS WARN=$WARN FAIL=$FAIL"
 if [[ "$FAIL" -gt 0 ]]; then echo 'SONUÇ: BLOCKED'; exit 1; fi
 if [[ "$WARN" -gt 0 ]]; then echo 'SONUÇ: STATIC_CHECKS_PASS_RUNTIME_PENDING'; exit 0; fi
 echo 'SONUÇ: CHECKS_PASS — canlıya çıkış onayı değildir'; exit 0
-

@@ -39,7 +39,7 @@ class SitePageController extends Controller
     public function sitemap(): Response
     {
         $urls = [];
-        if (app()->environment('production') && (bool) config('orvionart.public_indexing_enabled', false)) {
+        if (config('app.env') === 'production' && (bool) config('orvionart.public_indexing_enabled', false)) {
             $pages = SitePage::query()
                 ->where('status', 'published')
                 ->whereNotNull('published_at')
@@ -151,9 +151,9 @@ class SitePageController extends Controller
         return response()->view('public.site-page',array_merge(compact('page','settings','navigation','sections','publicExperiences','demoActive','socialImageUrl'),['preview'=>false,'viewport'=>'desktop']),200,[
             // A staging/non-production hostname must never become indexable just because
             // a published snapshot has its own SEO indexing flag disabled.
-            'X-Robots-Tag'=>(!app()->environment('production') || $page->published_noindex
-                ? 'noindex, nofollow, noarchive'
-                : 'index, follow'),
+            'X-Robots-Tag'=>config('app.env') !== 'production'
+                ? ($page->published_noindex ? 'noindex, nofollow' : 'noindex, nofollow, noarchive')
+                : ($page->published_noindex ? 'noindex, nofollow' : 'index, follow'),
             // Publication state can change immediately (unpublish/archive). Do not let a
             // browser or shared cache keep serving a page after its public lifecycle ends.
             'Cache-Control'=>'no-store, private',

@@ -25,10 +25,10 @@ class SecurityHeaders
         if (!$response->headers->has('Content-Security-Policy')) {
             $response->headers->set('Content-Security-Policy', "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; style-src 'self' 'unsafe-inline'; upgrade-insecure-requests");
         }
-        if (!app()->environment('production')) {
+        if (!$response->headers->has('X-Robots-Tag') && config('app.env') !== 'production') {
             $response->headers->set('X-Robots-Tag', 'noindex, nofollow, noarchive');
         }
-        if ($request->is('admin/*') || $request->is('admin')) {
+        if (($request->is('admin/*') || $request->is('admin')) && !$response->headers->has('Cache-Control')) {
             $response->headers->set('Cache-Control', 'no-store, private');
         }
         return $response;
