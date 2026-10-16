@@ -1,0 +1,1585 @@
+ORVIONART
+ANA GELİŞTİRME, MİMARİ, GERÇEK SUNUCUDA İLERLEME VE TESLİMAT TALİMATI
+SÜRÜM: V1.5 — KONTROLLÜ GERÇEK SUNUCU GELİŞTİRMESİ
+BELGE TÜRÜ: TEK VE BAĞLAYICI ANA TALİMAT
+DİL: TÜRKÇE
+DURUM: YENİ SUNUCUDA SIFIRDAN GELİŞTİRME İÇİN ESAS BELGE
+
+======================================================================
+0. BU BELGENİN AMACI VE BAĞLAYICILIĞI
+======================================================================
+
+Bu belge ORVIONART projesinin kapsamını, teknik kararlarını, geliştirme sırasını, gerçek sunucuda görünür ilerleme yöntemini, güvenlik sınırlarını, teslimat ölçütlerini ve son test politikasını tek yerde toplar.
+
+Bu belge, önceki V1.3 ve V1.4 ana talimatlarının yerine geçen güncel ana talimattır. Önceki belgelerde bulunan ve bu belgeyle çelişmeyen gereksinimler korunmuştur. Bir çelişki olduğunda bu belgedeki kural geçerlidir.
+
+ANA HEDEF:
+ORVIONART; yöneticinin deneyimler oluşturabildiği ve yönetebildiği, ziyaretçilerin QR/NFC bağlantılarıyla deneyimlere erişebildiği, bağımsız Demo Engine'i bulunan ve herkese açık web sitesinin tamamının Süper Admin içindeki Site Builder üzerinden yönetilebildiği güvenli, genişletilebilir bir web platformu olacaktır.
+
+KULLANICININ ÖNEMLİ ÇALIŞMA İSTEĞİ:
+Geliştirme yalnızca yerel ortamda hazırlanıp sonunda sürpriz şekilde sunucuya taşınmamalıdır. Kullanıcı gerçek sunucuda ilerlemeyi aşama aşama görebilmelidir. Bu nedenle mümkünse gerçek sunucuda, canlı siteyi bozmayan ayrı bir hazırlık/geliştirme alanı kurulmalı; her aşama bu alanda görünür hâle getirilmelidir. Kullanıcı, biten ekranları ve işlevleri gerçek sunucudaki bir URL üzerinden inceleyebilmelidir.
+
+Bu istek, doğrudan canlı web sitesini kontrolsüz biçimde değiştirmek anlamına gelmez. Görünür ilerleme için öncelik aynı sunucuda güvenli bir staging/hazırlık alanıdır. Hazırlık alanının adı ve yolu sunucunun mevcut durumuna göre belirlenir. Canlı site, kullanıcının açıkça onayladığı kontrollü yayınlama adımına kadar korunur.
+
+BAĞLAYICI GELİŞTİRME İLKELERİ:
+1. Önce gerçek sunucu ve mevcut dağıtım koşulları incelenir; varsayım yapılmaz.
+2. Proje yeni kurulum olarak ele alınır. Eski kod tabanı veya eski veritabanının var olduğu varsayılmaz.
+3. Yeni ORVIONART Süper Admin mimarisi kullanılır; ikinci bir yönetim paneli oluşturulmaz.
+4. Web sitesinin içerik ve tasarım düzenlemeleri Site Builder üzerinden yapılabilir olmalıdır. Olağan metin, görsel, renk, bölüm sırası ve sayfa değişiklikleri için kod değişikliği gerekmemelidir.
+5. Deneyim verilerinin tek kaynağı Deneyim Yönetimi'dir.
+6. Demo Engine, Site Builder'daki Demo tanıtımından ayrı sorumluluk taşır.
+7. Ödeme sistemi başlangıçta PASİF olur. Site Builder, deneyim yayınlama veya başka hiçbir modül ödeme sistemini kendiliğinden etkinleştiremez.
+8. Taslak içerikler ziyaretçilere gösterilmez.
+9. Gerçek sunucuda görünür ilerleme sağlanır; ancak canlı veri, canlı dosyalar ve mevcut çalışan site kontrolsüz şekilde riske atılmaz.
+10. Kapsamlı uçtan uca, güvenlik, mobil ve kabul testleri bütün ana modüller tamamlandıktan sonra tek planlı son test aşamasında yapılır. Geliştirme sırasında gerekli sözdizimi, migration tutarlılığı ve temel statik kontroller yapılabilir; bunlar kapsamlı test turu sayılmaz.
+11. Yapılmamış iş tamamlandı gibi gösterilmez. Test edilmemiş şey “test edilmedi” olarak kaydedilir.
+12. Kullanıcıya görünür ilerleme, her aşamada gerçek teslimat ve gerçek URL ile raporlanır. Yalnızca “tamamlandı” demek yeterli değildir.
+13. Sunucuya dosya dağıtımı, Plesk dosya yüklemeleri veya migration işlemleri kullanıcı tarafından belirlenen kontrollü akışta yürütülür. Dağıtım/izleme ekranı varsa, dağıtım geçmişini kaydeder; kullanıcı açıkça istemedikçe kendiliğinden dosya dağıtmaz.
+14. Üretim ortamında elle ve kontrolsüz SQL değişikliği yapılmaz. Veritabanı şeması sürümlü migration'larla yönetilir.
+15. Kaynak kodu, yapılandırma, medya ve yedekler birbirine karıştırılmaz; gizli anahtarlar kaynak koduna yazılmaz.
+
+======================================================================
+1. ÜRÜNÜN TANIMI VE ANA MODÜLLER
+======================================================================
+
+ORVIONART aşağıdaki ana modüllerden oluşur:
+
+A. ORVIONART Süper Admin
+B. Deneyim Yönetimi
+C. Medya ve Video Altyapısı
+D. QR ve NFC Bağlantı Sistemi
+E. Ziyaretçi Deneyim Oynatıcısı / Kamuya Açık Deneyim Akışı
+F. Demo Engine
+G. Site Builder / Web Sitesi Yönetimi
+H. Kullanım Hakkı ve Süre Yönetimi
+I. Ödeme Hazırlığı ve Ödeme Modülü (başlangıçta pasif)
+J. SEO, erişilebilirlik ve performans
+K. Güvenlik, denetim kayıtları ve gizlilik
+L. Yedekleme, zamanlanmış görevler ve arka plan işçileri
+M. Sunucu kurulum, yayınlama, sürümleme ve geri alma
+N. Geliştirme ve teslimat takip kayıtları
+
+Modüller birbirine entegre edilir ancak iş kuralları tek bir modülde sahiplenilir. Aynı bilginin birden fazla modülde birbirinden bağımsız kopyası tutulmaz.
+
+======================================================================
+2. GERÇEK SUNUCUDA GÖRÜNÜR İLERLEME STRATEJİSİ
+======================================================================
+
+2.1 TEMEL KARAR
+
+Kullanıcı projeyi gerçek sunucuda görerek ilerlemek istemektedir. Geliştirme planı buna göre hazırlanmalıdır. İlk iş, sunucunun mevcut durumunu incelemek ve canlı siteyi bozmadan görünür bir geliştirme alanı oluşturmaktır.
+
+Önerilen yapı:
+- Canlı alan: mevcut gerçek ziyaretçilerin kullandığı site. Kullanıcı onayı olmadan bozulmaz veya değiştirilmez.
+- Hazırlık/geliştirme alanı: aynı sunucuda ayrı alt alan adı, ayrı dizin veya sunucunun desteklediği güvenli eşdeğer bir alan.
+- Hazırlık veritabanı: mümkünse canlı veritabanından ayrı, yalnızca hazırlık uygulamasına ait veritabanı.
+- Hazırlık medya alanı: canlı medya dosyalarından ayrı.
+- Yayın alanı: yalnızca kontrollü ve açıkça belirlenmiş yayın adımıyla güncellenir.
+
+Örnek alan adı yalnızca örnektir: staging.orvionart.example. Gerçek alan adı, DNS ve sunucu bilgileri incelenmeden uydurulmayacaktır.
+
+2.2 SUNUCU İNCELEMESİ
+
+İlk aşamada yetkili erişimle aşağıdaki bilgiler kontrol edilir:
+- Sunucu işletim sistemi ve yönetim paneli.
+- Plesk veya benzeri panel sürümü.
+- PHP sürümü ve etkin eklentiler.
+- Composer ve komut satırı erişimi.
+- MySQL/MariaDB sürümü.
+- Web sunucusu ve rewrite desteği.
+- HTTPS/SSL durumu.
+- Alan adı ve alt alan adı oluşturma yetkisi.
+- Dosya izinleri ve sahiplik.
+- Uygulama kök dizini ve web kökü ayrımı.
+- Zamanlanmış görev/cron imkânı.
+- Arka plan worker çalıştırma imkânı.
+- Disk alanı, dosya boyutu sınırları ve PHP upload/post sınırları.
+- Sunucu kaynakları ve olası video işleme kısıtları.
+- Yedekleme imkânı ve geri yükleme yolu.
+- Canlı sitede mevcut dosya ve veritabanı olup olmadığı.
+- Mevcut canlı sistem varsa bu sisteme dokunmadan nasıl korunacağı.
+
+Sunucuya erişim bulunmuyorsa bu durum açıkça bildirilir. Erişim varmış gibi davranılmaz ve hayalî URL, dosya yolu veya kurulum sonucu yazılmaz.
+
+2.3 HAZIRLIK ALANININ KORUNMASI
+
+Hazırlık sitesi:
+- HTTPS kullanmalı.
+- İlk geliştirme süresince parola koruması veya uygun erişim kısıtlamasıyla korunmalı.
+- Arama motorları tarafından indekslenmemeli.
+- Hazırlıkta kullanılan örnek veya test verileri canlı müşteri verileriyle karıştırılmamalı.
+- Gerçek ödeme sağlayıcılarına işlem göndermemeli.
+- E-posta/SMS gibi dış işlemler test modunda veya devre dışı olmalı.
+- Hazırlık anahtarları ve canlı anahtarlar birbirinden ayrılmalı.
+- Canlı veritabanına yanlışlıkla yazmamalı.
+
+Kullanıcı gerçek sunucuda ekranları görebilmeli, fakat hazırlık alanının özel olması gereken verileri ve yönetim sayfaları yetkisiz kişilere açık bırakılmamalıdır.
+
+2.4 HER AŞAMADA GÖRÜNÜR TESLİMAT
+
+Her geliştirme aşamasının sonunda aşağıdakiler raporlanır:
+- Gerçekten oluşturulan modül.
+- Gerçek sunucudaki hazırlık URL'si; URL yoksa nedeni.
+- Açılabilen ekranlar ve sayfalar.
+- Çalışan işlevler.
+- Henüz bağlanmamış veya geçici olan işlevler.
+- Veritabanında yapılan migration'lar.
+- Eklenen/değiştirilen dosyaların kısa listesi.
+- Bilinen sınırlamalar.
+- Test durumu: yapılmadı / temel kontrol yapıldı / son kabul testini bekliyor.
+- Sonraki aşama.
+- Kullanıcıdan gereken bir karar veya işlem varsa net açıklaması.
+
+Ekranın yalnızca tasarım maketi değil, mümkün olduğu ölçüde gerçek sunucu, gerçek uygulama kodu ve gerçek hazırlık veritabanıyla çalışması hedeflenir. Henüz gerçek işlevi olmayan buton “çalışıyor” diye sunulmaz.
+
+2.5 CANLIYA GEÇİŞ KURALI
+
+Hazırlık alanında geliştirme yapmak, otomatik olarak canlı siteyi güncelleme izni değildir.
+Canlıya geçmeden önce:
+- Kaynak kodu sürümü belirlenir.
+- Veritabanı migration planı hazırlanır.
+- Yedek alınır ve yedekten geri dönüş yolu doğrulanır.
+- Gizli yapılandırmalar kontrol edilir.
+- Dosya izinleri ve web kökü kontrol edilir.
+- Canlıya alınacak dosya listesi hazırlanır.
+- Geri alma planı yazılır.
+- Kullanıcının belirlediği onay adımı uygulanır.
+
+Dağıtım sistemi varsa geçmişi ve sonucu kayıt altına alır. Açık talimat olmadan kendiliğinden Plesk'e dosya gönderen, canlı dosyaları değiştiren veya veritabanı migration'ı uygulayan otomasyon kurulmaz.
+
+======================================================================
+3. TEKNİK MİMARİ VE TEKNOLOJİ KARARI
+======================================================================
+
+3.1 GENEL TEKNOLOJİ
+
+Temel gereksinimler:
+- Sunucuyla uyumlu PHP uygulaması.
+- MySQL veya MariaDB ilişkisel veritabanı.
+- PDO ve parametreli sorgular; mümkünse seçilen framework'ün güvenli ORM/query altyapısı.
+- HTML, CSS ve JavaScript ile duyarlı arayüz.
+- Sunucu tarafında zorunlu yetkilendirme ve doğrulama.
+- Uygulama mantığı ile görünümün ayrılması.
+- Sürümlü veritabanı migration'ları.
+- Ortam bazlı yapılandırma.
+- Loglama ve hata yönetimi.
+- Güvenli dosya yükleme ve özel medya depolaması.
+
+3.2 FRAMEWORK KARARI
+
+Geliştirme başlamadan önce sunucunun gerçek koşulları incelenir. Composer, gerekli PHP sürümü, komut satırı ve worker desteği uygunsa Laravel gibi olgun bir PHP framework'ü tercih olarak değerlendirilir. Framework seçimi, sunucu uyumluluğu ve uzun vadeli bakım gerekçeleriyle belgelenir.
+
+Sadece alışkanlık veya moda nedeniyle framework seçilmez. Uygun framework seçildikten sonra, ciddi ve belgelenmiş bir teknik engel bulunmadıkça proje ortasında mimari değiştirilmez.
+
+Framework kullanılmıyorsa güvenlik, routing, CSRF, doğrulama, migration, kimlik doğrulama ve hata yönetimi için hangi karşılıkların sağlandığı açıkça belgelenir. Güvenlik mekanizmaları sıfırdan gelişigüzel yazılmaz.
+
+3.3 UYGULAMA KATMANLARI
+
+Mantıksal olarak şu katmanlar bulunmalıdır:
+- HTTP yönlendirme ve controller katmanı.
+- İş kuralları/service katmanı.
+- Veri erişim katmanı.
+- Veritabanı modelleri ve migration'lar.
+- Yönetim arayüzü.
+- Kamuya açık arayüz.
+- Dosya/medya depolama hizmeti.
+- Arka plan görevleri.
+- Güvenlik ve denetim katmanı.
+- Yapılandırma ve ortam yönetimi.
+
+Controller'lara bütün iş kuralları yığılmamalıdır. Deneyim, ödeme, yayınlama ve Demo iş kuralları ayrı servisler/modüller olarak yönetilmelidir.
+
+3.4 ORTAMLAR
+
+En azından mantıksal olarak şu ortamlar ayrılmalıdır:
+- Yerel/geliştirici ortamı (kullanılıyorsa).
+- Gerçek sunucudaki hazırlık ortamı.
+- Canlı üretim ortamı.
+
+Sunucu olanakları sınırlıysa bu ayrım aynı fiziksel sunucuda ayrı uygulama dizinleri, ayrı veritabanları ve ayrı yapılandırmalarla sağlanabilir. Ancak aynı canlı veritabanına hazırlık kodunun yazmasına izin verilmez.
+
+3.5 GİZLİ BİLGİLER
+
+- Veritabanı parolaları, API anahtarları ve ödeme sırları kaynak koduna yazılmaz.
+- Gizli bilgiler web kökü dışında tutulur veya sunucunun güvenli ortam değişkeni mekanizması kullanılır.
+- `.env` benzeri dosyalar web üzerinden indirilemez.
+- Örnek yapılandırma dosyalarında gerçek sırlar bulunmaz.
+- Hata ekranlarında parolalar, SQL ayrıntıları, token'lar veya dosya yolları ziyaretçilere gösterilmez.
+- Loglarda gizli bilgiler maskelenir.
+
+======================================================================
+4. SÜPER ADMİN VE YETKİLENDİRME
+======================================================================
+
+4.1 TEK YÖNETİM PANELİ
+
+Süper Admin ORVIONART'ın merkezi yönetim alanıdır. Site Builder için ikinci bir bağımsız yönetim paneli oluşturulmaz. Bütün yönetim modülleri aynı kimlik doğrulama, oturum, yetki ve tasarım sistemiyle entegre edilir.
+
+4.2 ANA MENÜ ÖNERİSİ
+
+- Genel Bakış
+- Deneyim Yönetimi
+- Günlük İçerik Yönetimi
+- Medya Kütüphanesi
+- Video İşleme Durumu
+- QR / NFC
+- Demo Engine
+- Site Builder
+- Kullanım Hakları
+- Ödeme Ayarları
+- SEO ve Site Ayarları
+- Kullanıcılar ve Yetkiler (gerektiğinde)
+- İşlem Kayıtları
+- Sistem Sağlığı
+- Yedekleme ve Bakım
+- Geliştirme / Yayın Geçmişi
+
+Menü, yetkiye göre gösterilebilir; ancak yalnızca menüyü gizlemek yetki kontrolü değildir. Her işlem sunucu tarafında da doğrulanmalıdır.
+
+4.3 KİMLİK DOĞRULAMA VE OTURUM
+
+- Güvenli parola saklama.
+- CSRF koruması.
+- Oturum çerezlerinde HttpOnly, Secure (HTTPS altında) ve uygun SameSite ayarları.
+- Oturum yenileme ve güvenli çıkış.
+- Başarısız girişlerde hız sınırlaması.
+- Uygun yönetici hesaplarında çok faktörlü kimlik doğrulama desteğine elverişli yapı.
+- Parola sıfırlama akışında süreli ve tek kullanımlık token.
+- Yönetici oturumlarının süresi ve iptali.
+- Yetkisiz erişimlerde güvenli hata yanıtları.
+
+4.4 YETKİLER
+
+İlk kurulumda güvenli bir Süper Admin hesabı oluşturulur. Varsayılan, herkesçe bilinen yönetici parolası bırakılmaz.
+
+Yetki sistemi en azından şu eylemleri birbirinden ayırabilecek biçimde tasarlanır:
+- Görüntüleme.
+- Oluşturma.
+- Düzenleme.
+- Silme/arşivleme.
+- Yayınlama.
+- Geri alma.
+- Sistem ayarlarını değiştirme.
+- Ödeme ayarlarını değiştirme.
+- Yedekleme/geri yükleme.
+
+İlk sürümde tek yönetici varsa bile bu ayrım ileride yetkileri güvenli şekilde genişletmeye uygun tasarlanır.
+
+4.5 DENETİM KAYDI
+
+Kritik işlemler için audit log tutulur:
+- Giriş ve çıkış olayları.
+- Yetki değişiklikleri.
+- Deneyim oluşturma ve durum değişiklikleri.
+- İçerik yayınlama ve geri alma.
+- Site Builder yayınları.
+- Demo açma/kapatma.
+- Ödeme ayarı değişiklikleri.
+- Kullanım hakkı değişiklikleri.
+- Yedekleme ve geri yükleme.
+- Güvenlik ayarları değişiklikleri.
+
+Loglarda parola, oturum token'ı, ödeme sırrı veya tam gizli anahtar tutulmaz. Loglara erişim kısıtlanır.
+
+======================================================================
+5. DENEYİM YÖNETİMİ — TEK KAYNAK
+======================================================================
+
+5.1 SORUMLULUK
+
+Deneyim Yönetimi her deneyimin kanonik/gerçek kaydının tek sahibidir. Site Builder veya Demo Engine bu kaydı bağımsız bir deneyim kaydı olarak çoğaltamaz.
+
+5.2 DENeyİM ALANLARI
+
+Gereksinime uygun olarak aşağıdaki alanlar desteklenir:
+- Benzersiz dahili kimlik.
+- Deneyim adı.
+- Benzersiz, SEO dostu slug.
+- Açıklama.
+- Kapak/hero medya referansı.
+- İsteğe bağlı ek görseller ve videolar.
+- Oluşturulma ve güncellenme zamanı.
+- Başlangıç tarihi ve saati.
+- Saat dilimi.
+- Süre ve süre birimi.
+- Deneyimin bitiş zamanını hesaplama kuralı.
+- Yayın durumu.
+- Aktif/pasif durumu.
+- Satın alınabilirlik durumu.
+- Kullanım hakkı veya plan ilişkisi.
+- QR/kalıcı URL referansı.
+- SEO başlığı ve açıklaması gerektiğinde.
+- Arşivleme ve silinme politikası.
+
+İş gereksinimi doğrulanmadan her alanın zorunlu olduğu varsayılmaz. Ancak kritik tarih/süre alanlarında belirsizlik bırakılmaz.
+
+5.3 DURUM MODELİ
+
+Durumlar açıkça ayrılır. Örnek:
+- Taslak.
+- Yayında.
+- Pasif.
+- Süresi dolmuş.
+- Arşivlenmiş.
+
+Aktif/pasif, yayın/taslak, satın alınabilirlik ve süre sonu birbirinden farklı kavramlardır. Bunları tek bir `status` alanına sıkıştırmak yerine açık bir durum modeli kullanılır veya birleşik durumların anlamı belgelenir.
+
+5.4 SÜRE HESAPLAMA
+
+- Saat dilimi açıkça saklanır veya normalize edilmiş zaman damgası ile kaynak saat dilimi beraber tutulur.
+- Yaz saati uygulaması olan bölgelerde belirsiz yerel saatler dikkate alınır.
+- Başlangıç ve bitiş hesabının dahil/dahil değil kuralları belgelenir.
+- Süresi dolan deneyimin ziyaretçi davranışı sunucu tarafında belirlenir.
+- Yönetici tarafından uzatma veya pasife alma işlemleri denetim kaydına yazılır.
+- Arka plan görevi süre sonu durumlarını güncelleyebilir; fakat ziyaretçi erişiminde yalnızca görevin çalışmasına güvenilmez. Her erişimde de süre kuralı kontrol edilir.
+
+5.5 GÜNLÜK İÇERİK
+
+Deneyimin günlere bağlı içerik planı desteklenir:
+- Gün numarası/tarih.
+- Metin içeriği.
+- Görsel/video medya referansı.
+- İçeriğin yayın/işlenme durumu.
+- Gerekirse sıralama ve erişim kuralı.
+
+Aynı gün için çakışan içeriklerin davranışı belirlenir. Eksik günlük içerik olduğunda güvenli, anlaşılır bir ziyaretçi durumu gösterilir; teknik hata veya başka bir deneyimin içeriği gösterilmez.
+
+5.6 KALICI URL
+
+Her deneyim için benzersiz ve kalıcı bir ziyaret URL'si oluşturulur. İsim/slug değişikliği mevcut QR/NFC etiketlerini bozmamalıdır. Bunun için mümkün olduğunda değişmeyen opak bir token veya sabit public identifier ile yönlendirme yapılır; slug yalnızca okunabilir URL parçası olarak kullanılabilir.
+
+Silme yerine arşivleme tercih edilir. Kalıcı URL'nin davranışı deneyim durumu ve saklama politikasına göre belirlenir.
+
+======================================================================
+6. MEDYA KÜTÜPHANESİ VE DOSYA DEPOLAMA
+======================================================================
+
+6.1 ORTAK HİZMET, AYRI MANTIKSAL ALANLAR
+
+Teknik dosya depolama hizmeti ortak kullanılabilir. Ancak şu medya sahiplik alanları mantıksal olarak ayrı kalır:
+- Site Builder medya kütüphanesi.
+- Deneyim medyaları.
+- Demo Engine medya havuzu.
+- Sistem tarafından üretilen QR ve türev dosyalar.
+
+Bir alana yüklenen dosya otomatik olarak başka bir alanda yayımlanmış veya kullanıma açılmış sayılmaz.
+
+6.2 DOSYA GÜVENLİĞİ
+
+- Dosya uzantısına tek başına güvenilmez; MIME/type ve mümkün olduğunda dosya imzası kontrol edilir.
+- İzin verilen dosya türleri açıkça listelenir.
+- Maksimum dosya boyutu ve video süresi sunucu kapasitesine göre belirlenir.
+- Dosya adı kullanıcı girdisinden doğrudan oluşturulmaz; güvenli benzersiz depolama adı kullanılır.
+- Yüklenen dosyalar mümkün olduğunca web kökü dışında saklanır.
+- Dosyaya erişim uygulamanın izin kontrolünden geçer.
+- Çalıştırılabilir dosyaların yüklenmesi engellenir.
+- SVG gibi aktif içerik içerebilen türler sanitize edilmeden doğrudan yayımlanmaz veya ilk sürümde kapalı tutulur.
+- Dosya boyutu, uzantı ve içerik doğrulaması hem istemci hem sunucu tarafında yapılır; asıl güvenlik sunucu tarafındadır.
+- Dosya erişim yetkileri dosyanın ait olduğu deneyim/alanla uyumlu olmalıdır.
+
+6.3 MEDYA METAVERİSİ
+
+Gerekli alanlar:
+- Dosya kimliği.
+- Depolama anahtarı/yolu.
+- Orijinal dosya adı.
+- MIME türü.
+- Boyut.
+- Görsel/video ölçüleri ve süre gibi teknik bilgiler.
+- Yükleyen yönetici.
+- Yüklenme tarihi.
+- Alternatif metin.
+- Açıklama.
+- Kullanım alanı/medya koleksiyonu.
+- İşleme durumu.
+- Referans sayısı veya bağlı kayıt ilişkileri.
+
+6.4 GÜVENLİ SİLME
+
+Site Builder'da kullanılan bir medya dosyası silinmek istendiğinde:
+- Dosyanın başka bir sayfa veya modülde kullanılıp kullanılmadığı kontrol edilir.
+- Kullanılıyorsa kullanıcıya açık uyarı gösterilir.
+- Kullanılan dosya anında fiziksel olarak silinmez.
+- Önce arşivleme/soft-delete veya güvenli referans kaldırma yaklaşımı uygulanır.
+- Deneyim veya Demo medyası, Site Builder medyasının silinmesinden etkilenmez.
+- Gerçek fiziksel silme, referanssız olduğu doğrulandıktan ve saklama politikası uygunsa yapılır.
+
+6.5 GÖRSEL PERFORMANSI
+
+- Küçük ekranlar için uygun boyutlar üretilir.
+- Gerektiğinde WebP/AVIF gibi formatlar sunucu desteği ve kalite korunarak kullanılır.
+- Görselin orijinal dosyası gerektiğinde korunur.
+- Lazy loading uygun görsellerde kullanılır.
+- Görsel boyutları sayfa düzeninde rezerve edilerek layout kayması azaltılır.
+- Alternatif metin alanı desteklenir.
+- Kalite, dosya boyutu ve mobil performans dengelenir.
+
+======================================================================
+7. PARÇALI VE DEVAM EDEBİLEN VİDEO YÜKLEME
+======================================================================
+
+7.1 AMAÇ
+
+Yönetici, özellikle mobil telefondan büyük video yükleyebilmeli; bağlantı kesildiğinde tüm dosyayı yeniden başlatmadan kaldığı yerden devam edebilmelidir.
+
+7.2 AKIŞ
+
+1. Yönetici dosya seçer.
+2. İstemci dosya boyutu, türü ve gerekiyorsa checksum bilgilerini hazırlar.
+3. Sunucu yetkili bir yükleme oturumu oluşturur.
+4. Yükleme için benzersiz ve tahmin edilemez oturum kimliği verilir.
+5. Dosya belirlenen parçalara ayrılarak gönderilir.
+6. Sunucu her parçanın durumunu güvenli biçimde kaydeder.
+7. Bağlantı kesilirse istemci tamamlanan parçaları öğrenir ve eksik parçaları tekrar gönderir.
+8. Yinelenen parça gönderimi idempotent biçimde ele alınır.
+9. Bütün parçalar geldikten sonra birleştirme işi başlatılır.
+10. Birleştirilen dosyanın boyutu ve bütünlüğü kontrol edilir.
+11. Dosya türü/codec ve desteklenen teknik özellikler kontrol edilir.
+12. Gerekiyorsa video işleme kuyruğuna alınır.
+13. İşleme sonucu başarı/hata olarak kaydedilir.
+14. Yalnızca hazır ve doğrulanmış dosya ilgili deneyim veya medya alanında kullanılabilir.
+
+7.3 GÜVENLİK VE DAYANIKLILIK
+
+- Yükleme oturumu kullanıcının yetkisine bağlıdır.
+- Başka bir yöneticiye ait oturum erişilemez.
+- Oturum kimlikleri tahmin edilemez.
+- Parça boyutu sunucu kaynaklarına göre belirlenir.
+- Aynı parça tekrar geldiğinde dosya bozulmamalıdır.
+- Eksik veya hatalı parçalar tespit edilmelidir.
+- Süresi dolmuş tamamlanmamış yüklemeler zamanlanmış görevle temizlenmelidir.
+- Temizleme işlemi tamamlanmış ve referans verilen dosyaları silmemelidir.
+- Geçici dosyalar web kökü dışında tutulmalıdır.
+- Disk alanı yetersizse işlem güvenli hata vermeli, sessizce bozuk dosya üretmemelidir.
+- Video işleme başarısız olursa kaynak dosya saklama politikasına uygun korunmalı ve yöneticiye hata nedeni sunulmalıdır.
+- Büyük dosya işlemleri HTTP isteği açık kaldığı sürece çalışmaya zorlanmamalı; destekleniyorsa arka plan worker kullanmalıdır.
+
+7.4 İŞLEME DURUMLARI
+
+Örnek durumlar:
+- Yükleme bekliyor.
+- Yükleniyor.
+- Birleştirme bekliyor.
+- Birleştiriliyor.
+- Doğrulanıyor.
+- İşleme kuyruğunda.
+- İşleniyor.
+- Hazır.
+- Hata.
+- İptal edildi.
+- Süresi doldu.
+
+Durumlar arayüzde anlaşılır biçimde gösterilir. Arayüzün ilerleme yüzdesi gerçek sunucu durumuna dayanmalı; uydurma ilerleme animasyonu kullanılmamalıdır.
+
+======================================================================
+8. QR VE NFC SİSTEMİ
+======================================================================
+
+8.1 KALICI BAĞLANTI
+
+Her deneyim ve Demo için kendi kapsamına uygun kalıcı URL üretilir. URL, artan sayısal veritabanı kimliğini tek başına açığa çıkaran tahmin edilebilir bir bağlantı olmamalıdır. Uygun yüksek entropili token veya güvenli public identifier kullanılmalıdır.
+
+8.2 QR
+
+- QR, gerçek URL'yi kodlamalıdır.
+- QR PNG veya uygun indirilebilir formatta sunulmalıdır.
+- QR önizlemesi ve indirme yönetim panelinde bulunmalıdır.
+- QR'nin sessiz alanı/quiet zone ve taranabilirliği korunmalıdır.
+- URL değişiklikleri mevcut basılı QR'yi bozmamalıdır.
+- QR oluşturma hataları loglanmalı ve kullanıcıya anlaşılır biçimde gösterilmelidir.
+- QR dosyası ile deneyim kaydı arasındaki ilişki saklanmalıdır.
+
+8.3 NFC
+
+NFC tanıtım görseli gerçek NFC işlevi değildir. NFC etiketine yazılması gereken gerçek, kalıcı URL sağlanmalıdır. Yazma işlemi desteklenmiyorsa panel, etiketin fiziksel olarak yazıldığını iddia etmemelidir.
+
+NFC için:
+- Etikete yazılacak URL gösterilir ve kopyalanabilir.
+- Etiket türü ve cihaz uyumluluğuna dair kısa yönerge verilebilir.
+- Etiket yazma doğrulaması uygulama tarafından yapılmıyorsa “yazıldı” durumu otomatik varsayılmaz.
+- NFC URL'si de deneyimin kalıcı bağlantı kurallarına uyar.
+
+8.4 ERİŞİM KARARI
+
+Ziyaretçi URL'yi açtığında sunucu:
+- Deneyimin varlığını.
+- Yayın durumunu.
+- Aktif/pasif durumunu.
+- Başlangıç ve bitiş zamanını.
+- Kullanım hakkını.
+- İçeriğin o gün için hazır olup olmadığını.
+kontrol eder.
+
+Taslak, pasif veya erişim hakkı bulunmayan içerik yetkisiz ziyaretçiye sızdırılmaz. Kullanıcıya uygun, güvenli ve anlaşılır bir erişilemiyor/süresi doldu ekranı gösterilir.
+
+8.5 ZİYARETÇİ AKIŞI
+
+- Ziyaretçi QR/NFC bağlantısını telefonunda açar.
+- Genel deneyim akışı için hesap açma zorunluluğu eklenmez.
+- Deneyimin durumuna göre ilgili içerik sunulur.
+- Medya dosyalarına erişim yetkisi doğru uygulanır.
+- İçerik yüklenirken anlaşılır durum gösterilir.
+- Boş ekran, gizli hata ayrıntısı veya başka deneyime ait içerik gösterilmez.
+- Mobil kullanım temel önceliktir.
+
+======================================================================
+9. DEMO ENGINE — BAĞIMSIZ GERÇEK DEMO
+======================================================================
+
+9.1 DEMO'NUN AYRI SORUMLULUĞU
+
+Demo Engine, gerçek Demo içeriğini ve çalışma kurallarını yönetir. Site Builder ise web sitesindeki Demo tanıtımını yönetir. Bunlar birbirinin yerine geçmez.
+
+9.2 DEMO ÖZELLİKLERİ
+
+- Bağımsız aktif/pasif durumu.
+- Ayrı medya havuzu.
+- Demo içeriklerinin günlük atanması.
+- Cihaz/ziyaretçi ayrımı için gizlilik odaklı belirteç.
+- Demo başlangıç ve bitiş/süre kuralları.
+- Demo QR ve kalıcı URL.
+- İstatistikler.
+- İçerik hazırlama ve yayın durumu.
+- Süre dolumu ve pasife alma davranışı.
+- Yönetici için durum görünümü.
+
+9.3 DEMO SÜRESİ
+
+Varsayılan demo yolculuğu/süre kuralı 7 gün olarak tasarlanır; yönetici ayarıyla 1–365 gün aralığı desteklenir. Bu ayar Demo Engine'in kendi iş kuralıdır.
+
+“Genel Demo URL'si, Demo Engine aktif kaldığı sürece süresiz erişilebilir” ifadesi, her cihazın Demo yolculuğunun süresiz olduğu anlamına gelmez. Genel bağlantı çalışır; fakat her cihazın kendi demo yolculuğu, günlük içerik ve süre kuralları Demo Engine tarafından uygulanır.
+
+Bu iki süre kavramı arayüz ve teknik belgelerde birbirine karıştırılmaz.
+
+9.4 CİHAZ BELİRTECİ VE GİZLİLİK
+
+- Cihazı ayırt etmek için gereğinden fazla kişisel veri toplanmaz.
+- Mümkünse uygulamaya özel, rastgele ve geri döndürülemez veya doğrudan kimlik içermeyen belirteç kullanılır.
+- IP adresi gibi veriler zorunlu olmadıkça kalıcı cihaz kimliği olarak kullanılmaz.
+- Çerez/local storage kullanımı, gerekli bilgilendirme ve rıza gereksinimleri değerlendirilerek uygulanır.
+- Veri saklama süresi tanımlanır.
+- Demo istatistikleri için gerekli olmayan veriler saklanmaz.
+- Belirteçler URL'ye sır olarak yazılmaz ve loglarda ifşa edilmez.
+
+9.5 DEMO AKTİF/PASİF ETKİLEŞİMİ
+
+- Site Builder Demo bölümü yayında, Demo Engine pasifse buton çalışan demo varmış gibi davranmamalıdır. Bölüm gizlenebilir veya anlaşılır bir “Demo şu anda kullanılamıyor” durumu gösterebilir.
+- Demo Engine aktif, Site Builder tanıtım bölümü pasifse ana sayfada Demo bölümü gösterilmez; doğrudan Demo URL'sinin davranışı Demo Engine politikasına göre devam eder.
+- Demo Engine pasif olduğunda QR/NFC bağlantısı güvenli pasif ekranına yönelir.
+- Demo medyaları normal deneyim medyalarına otomatik karışmaz.
+- Demo kullanım istatistikleri normal deneyim istatistiklerinden ayrıdır.
+- Demo, ödeme sistemi kapalı olsa da çalışabilir.
+
+======================================================================
+10. SITE BUILDER — TÜM WEB ARAYÜZÜNÜ MERKEZDEN YÖNETME
+======================================================================
+
+10.1 TEMEL HEDEF
+
+Site Builder, yalnızca ana sayfa düzenleyicisi değil, ORVIONART'ın tüm herkese açık web arayüzünü yöneten merkezi CMS ve sayfa düzenleme katmanıdır.
+
+Web sitesinin olağan içerik ve tasarım değişiklikleri kod değişikliği gerektirmemelidir. Güvenli ve önceden tanımlanmış bileşenler kodla hazırlanabilir; ancak yönetici bunları panelden yapılandırabilmelidir.
+
+10.2 SITE BUILDER MENÜLERİ
+
+- Genel Site Ayarları.
+- Ana Sayfa Düzeni.
+- Sayfa ve Bölüm Yönetimi.
+- Menü ve Navigasyon.
+- Hero Slider.
+- QR Çözümleri Tanıtımı.
+- NFC Çözümleri Tanıtımı.
+- QR + NFC Çözümleri Tanıtımı.
+- Deneyim Tanıtımları.
+- Demo Bölümü.
+- 30 Gün Ücretsiz Kullanım Tanıtımı.
+- Kullanım Alanları.
+- Nasıl Çalışır?
+- SSS.
+- Hakkımızda.
+- İletişim.
+- Footer Yönetimi.
+- Görsel Medya Kütüphanesi.
+- Tema ve Tasarım Ayarları.
+- SEO Ayarları.
+- Masaüstü/Tablet/Mobil Önizleme.
+- Taslaklar ve Yayın Yönetimi.
+- Yayın Geçmişi ve Geri Alma.
+
+10.3 GENEL SITE AYARLARI
+
+Yönetilebilir alanlar:
+- Site adı ve marka metinleri.
+- Logo ve favicon.
+- Marka renkleri.
+- Başlık ve gövde yazı tipleri (güvenli izinli seçenekler).
+- Genel içerik genişliği.
+- Buton stilleri.
+- Genel arka plan ve yüzey stilleri.
+- Header/menu davranışı.
+- Footer düzeni.
+- Varsayılan SEO değerleri.
+- Sosyal medya paylaşım görseli.
+- İletişim bilgileri.
+- Site bakım modu ve ziyaretçi mesajı.
+- Varsayılan dil ve dil altyapısı için genişlemeye uygun yapı.
+
+Güvenli sınır: Panel üzerinden keyfî PHP/JavaScript çalıştırılması veya sınırsız CSS enjeksiyonu yapılmaz. İzinli tasarım ayarları ve güvenli bileşenler kullanılır.
+
+10.4 SAYFA YÖNETİMİ
+
+Sayfa kayıtları en azından şu bilgileri destekler:
+- Başlık.
+- Benzersiz URL/slug.
+- Sayfa türü/şablonu.
+- Taslak/yayın durumu.
+- Menüde göster/gizle.
+- SEO başlığı.
+- Meta açıklaması.
+- Sosyal paylaşım görseli.
+- Oluşturulma/güncellenme/yayın zamanı.
+- Yayınlayan yönetici.
+- Sayfa sürümü.
+- İsteğe bağlı canonical URL ve indeksleme ayarı.
+- Gerekli sayfalarda yönlendirme veya eski URL davranışı.
+
+Slug çakışmaları kontrol edilir. Sistem rotaları ve özel dinamik sayfalarla çakışma engellenir. Bir slug değişirse eski URL için gerektiğinde 301 yönlendirme planlanır; deneyim kalıcı QR URL'leri bundan etkilenmez.
+
+10.5 BÖLÜM YÖNETİMİ
+
+Sayfalar sıralanabilir bölümlerden oluşur. Bölümün türü, sırası, aktif/pasif durumu ve yapılandırması bulunur.
+
+İlk sürümde güvenli, tekrar kullanılabilir bileşenler:
+- Hero/başlık alanı.
+- Metin ve görsel.
+- Görsel + metin.
+- Kart listesi.
+- Deneyim kartları.
+- QR/NFC özellik karşılaştırma veya tanıtım alanı.
+- CTA/buton alanı.
+- Video tanıtımı.
+- Kullanım alanları listesi.
+- Adım adım anlatım.
+- SSS akordeonu.
+- İstatistik/özellik alanı.
+- Logo/marka alanı.
+- İletişim çağrısı.
+- Footer.
+- Güvenli, yapılandırılabilir özel içerik alanı.
+
+Her bölüm için uygun alanlar:
+- Dahili tür.
+- Başlık ve alt başlık.
+- Metin.
+- Görsel/video referansı.
+- Alternatif metin.
+- CTA metni ve URL'si.
+- Görsel hizalama.
+- Tema varyantı.
+- Masaüstü/mobil görsel tercihi.
+- Sıra.
+- Aktif/pasif.
+- Yayın durumu.
+- Erişilebilirlik ve bağlantı ayarları.
+
+Bölüm türü desteklemediği alanları görmezden gelmeli; hatalı yapılandırma sayfayı çökertmemelidir.
+
+10.6 SÜRÜKLE-BIRAK VE SIRALAMA
+
+Kullanılabiliyorsa sürükle-bırak arayüzüyle bölüm sırası değiştirilebilir. Erişilebilirlik ve mobil yönetim için alternatif yukarı/aşağı taşıma kontrolleri de bulunur. Yeni sıra sunucuya kaydedilir ve sayfa yeniden açıldığında korunur.
+
+10.7 DENeyİM TANITIMLARI — TEK KAYNAK KURALI
+
+Site Builder deneyim kayıtlarını kopyalamaz. Deneyim Yönetimi'ndeki kayıtları referansla seçer.
+
+Site Builder yalnızca sunum ayarlarını tutabilir:
+- Hangi deneyimlerin hangi bölümde gösterileceği.
+- Gösterim sırası.
+- Kart görünümü.
+- Sunum için isteğe bağlı kısa başlık/etiket gibi kaynak deneyimin kanonik alanını değiştirmeyen sunum metinleri.
+- Görsel kırpma/hizalama tercihi.
+- CTA gösterimi.
+
+Deneyim adı veya açıklamasının kaynak kaydı değiştirilirse bu değişiklik tek kaynaktan gelir. Sunum metni ayrı kullanılıyorsa bunun bir sunum override'ı olduğu açıkça gösterilir.
+
+Deneyim taslak, pasif veya süresi dolmuş durumdaysa kamuya açık deneyim listesinde gösterilmez. Site Builder'da referansı kalmış olması erişim izni yaratmaz. Silinmiş veya artık bulunmayan referanslar güvenli biçimde işlenir.
+
+10.8 DİNAMİK DENEYİM DETAY SAYFASI
+
+Her deneyim için ayrı ayrı elle kodlanmış sayfa yapılmaz. Ortak şablon kullanılır. Deneyim verisi Deneyim Yönetimi'nden alınır.
+
+Şablon:
+- Başlık.
+- Açıklama.
+- Kapak medya.
+- İçerik/özellikler.
+- İzin verilen CTA.
+- SEO alanları.
+- Durum kontrolü.
+
+Deneyim yayında ve erişilebilir değilse ayrıntı sayfası güvenli 404 veya açıklayıcı erişilemiyor durumu döndürür. Özel admin verileri, dahili kimlikler veya gizli içerik açığa çıkmaz.
+
+10.9 MENÜ YÖNETİMİ
+
+- Ana menü ve footer bağlantıları yönetilebilir.
+- Bağlantılar sayfalara veya izin verilen haricî URL'lere yönlenebilir.
+- Haricî URL'ler doğrulanır.
+- Menü sıralaması düzenlenebilir.
+- Mobil menü de aynı kaynaktan beslenir.
+- Yönetim paneli veya özel sistem rotaları yanlışlıkla kamu menüsüne eklenirse güvenlik kontrolü uygulanır.
+- Taslak sayfalar menüde yayınlanmış bağlantı olarak gösterilmez.
+- Menüdeki ölü/bozuk bağlantılar yönetim arayüzünde tespit edilebilir.
+
+10.10 HERO SLIDER
+
+- Birden fazla slayt.
+- Görsel.
+- Başlık ve alt başlık.
+- CTA metni ve hedefi.
+- Sıra.
+- Aktif/pasif.
+- Başlangıç/bitiş yayın zamanı gerekiyorsa.
+- Mobil görsel seçeneği.
+- Alternatif metin.
+- Erişilebilirlik için otomatik hareketi durdurma veya kullanıcı kontrolü.
+- Görsel yüklenmezse güvenli yedek görünüm.
+- Boş CTA veya hatalı URL'de buton gösterilmemesi.
+
+10.11 QR, NFC VE BİRLEŞİK TANITIM BÖLÜMLERİ
+
+Bu bölümler pazarlama içeriğini yönetir; gerçek QR/NFC işlevini yeniden uygulamaz.
+
+- QR çözümünün açıklaması, görseli ve CTA'sı.
+- NFC çözümünün açıklaması, görseli ve CTA'sı.
+- QR + NFC çözümünün açıklaması ve CTA'sı.
+- Aktif/pasif ve yayın durumu.
+- Mobil ve masaüstü düzeni.
+- CTA'nın doğru hedefe gitmesi.
+
+Gerçek NFC etiketinin yazıldığı veya gerçek QR üretildiği, yalnızca görsel tanıtım gösterildiği için iddia edilmez.
+
+10.12 DEMO TANITIM BÖLÜMÜ
+
+Site Builder sadece görünüm, metin, görsel, bölüm sırası ve CTA'yı yönetir. Gerçek demo durumunu Demo Engine belirler.
+
+CTA'nın kullanılabilirliği Demo Engine durumuyla uyumlu olmalıdır. Demo pasifken ziyaretçi çalışan Demo varmış gibi yönlendirilmemelidir.
+
+10.13 30 GÜN ÜCRETSİZ KULLANIM TANITIMI
+
+Site Builder tanıtım metnini, görselini, CTA'sını ve yayın durumunu yönetir. Gerçek kullanım hakkını oluşturmaz ve süreyi başlatmaz.
+
+Tanıtım yalnızca gerçek ticari kurallarla uyumlu olduğu doğrulandıktan sonra yayınlanmalıdır. Hangi kullanıcı/deneyim/cihaz için ücretsiz hak verileceği belirlenmeden sistem otomatik entitlement kuralı uydurmaz.
+
+10.14 FOOTER
+
+- Bağlantı grupları.
+- İletişim bilgileri.
+- Sosyal medya bağlantıları.
+- Telif/marka metni.
+- Gizlilik ve kullanım koşulları bağlantıları.
+- İsteğe bağlı bülten/CTA alanı; gerçek altyapı yoksa çalışıyormuş gibi gösterilmez.
+
+Hukuki metinler gerçek şirket bilgileri ve gerçek uygulama davranışına uygun olmalıdır. Yer tutucu veya uydurma hukuki metin, onaylanmış içerik gibi yayınlanmaz.
+
+10.15 MEDYA KÜTÜPHANESİ ENTEGRASYONU
+
+Site Builder görsel seçerken güvenli medya kütüphanesini kullanır. Yüklenen her dosya otomatik olarak Demo veya Deneyim havuzuna girmez. Dosya silme ve arşivleme referansları kontrol eder.
+
+10.16 TASLAK, ÖNİZLEME, YAYIN VE GERİ ALMA
+
+- Taslaklar ziyaretçilere görünmez.
+- Yönetici taslak önizlemesini yetkili bir önizleme URL'si veya oturumuyla açabilir.
+- Önizleme token'ları tahmin edilemez, süreli ve iptal edilebilir olmalıdır.
+- Önizleme sayfaları arama motorlarınca indekslenmemelidir.
+- Yayınlama atomik veya güvenli sürüm değişimiyle yapılmalıdır.
+- Hatalı taslak yayınlanmadığında mevcut yayın korunmalıdır.
+- Her yayın sürümü saklanmalıdır.
+- Önceki sürüme geri dönülebilmelidir.
+- Yayınlama zamanı ve yapan yönetici kaydedilmelidir.
+- Geri alma işlemi de yeni bir audit kaydı oluşturmalıdır.
+- Yayınlanmış sürüm ile düzenlenen taslak birbirinden ayrılmalıdır.
+
+10.17 YAYIN GEÇMİŞİ
+
+Her sayfa/site yayınında:
+- Sürüm kimliği.
+- Sürüm zamanı.
+- Yayınlayan yönetici.
+- Değişiklik özeti.
+- Önceki sürüme referans.
+- Yayın durumu.
+- Geri alma işlemi.
+tutulur.
+
+Geri alma yalnızca metni değil, bölüm sırasını, tema ayarlarını, medya referanslarını ve bağlantıları tutarlı biçimde geri getirmelidir. Dosya veya kaynak medya silinmişse geri alma öncesi doğrulama ve anlaşılır hata mesajı gerekir.
+
+10.18 MOBİL, TABLET VE MASAÜSTÜ
+
+- Responsive tasarım zorunludur.
+- Mobil ekranlar birinci sınıf kullanım senaryosudur.
+- Metin ve butonlar dokunmaya uygun boyutta olmalıdır.
+- Yatay taşma olmamalıdır.
+- Görseller uygun çözünürlükte sunulmalıdır.
+- Yönetici paneli de mobilde temel yönetim işlemlerini yapmaya elverişli olmalıdır.
+- Önizleme modları gerçek viewport boyutlarını simüle etmeli; ancak son doğrulama gerçek cihazlarda yapılmalıdır.
+
+10.19 ERİŞİLEBİLİRLİK
+
+- Semantik başlık hiyerarşisi.
+- Klavyeyle kullanılabilir menüler ve kontroller.
+- Görseller için alternatif metin.
+- Form alanlarında etiket ve hata açıklamaları.
+- Yeterli renk kontrastı.
+- Otomatik hareketi durdurma seçeneği.
+- Yalnızca renkle ifade edilmeyen durumlar.
+- Anlaşılır odak göstergeleri.
+- Video için uygun başlık/altyazı yaklaşımı, içerik gereksinimine göre.
+
+10.20 GÜVENLİ RENDER
+
+CMS metinleri bağlamına uygun şekilde escape edilmelidir. Yöneticiye sınırsız HTML/JS çalıştırma imkânı verilmez. Zengin metin editörü gerekiyorsa izinli etiket/öznitelik listesi ve sunucu tarafı sanitize mekanizması kullanılır. URL şemaları doğrulanır; `javascript:` gibi tehlikeli URL'ler engellenir.
+
+======================================================================
+11. KAMUYA AÇIK WEB SİTESİ VE SAYFA HARİTASI
+======================================================================
+
+Site Builder altyapısı aşağıdaki sayfa türlerini destekleyebilmelidir. Her sayfanın ilk günden içerikle doldurulması zorunlu değildir; altyapı sayfaları yönetebilir olmalıdır.
+
+Önerilen sayfalar:
+- Ana Sayfa.
+- QR Çözümleri.
+- NFC Çözümleri.
+- QR + NFC Çözümleri.
+- Deneyimler liste sayfası.
+- Deneyim detay şablonu.
+- Demo.
+- 30 Gün Ücretsiz Kullanım tanıtımı.
+- Kullanım Alanları.
+- Nasıl Çalışır?
+- SSS.
+- Hakkımızda.
+- İletişim.
+- Gizlilik Politikası.
+- Çerez Politikası/Bilgilendirmesi, uygulanabilir olduğu ölçüde.
+- Kullanım Koşulları.
+- İlgili diğer hukuki sayfalar, iş modeline göre.
+
+Ana sayfada “Giriş Yap” veya “Hesabım” bağlantısı varsayılan olarak bulunmamalıdır. Ziyaretçilerin deneyime erişmesi için kullanıcı hesabı zorunluluğu eklenmez. Yönetici girişi ayrı ve kamu navigasyonundan gizli yönetim rotasında bulunur.
+
+Hukuki sayfalarda gerçek işletme bilgileri ve gerçek veri işleme davranışları kullanılmalıdır. Uydurma adres, şirket bilgisi, iletişim bilgisi veya yasal güvence eklenmez.
+
+======================================================================
+12. KULLANIM HAKKI, ÜCRETSİZ PLAN VE TİCARİ KURALLAR
+======================================================================
+
+12.1 KAVRAMLARI AYIR
+
+Aşağıdakiler birbirinden farklıdır:
+- Bir deneyimin kendi süresi.
+- 30 günlük standart ücretsiz deneyim planı.
+- Platform veya müşteri hesabına bağlı olabilecek genel ücretsiz kullanım dönemi.
+- İlk yıl ücretsiz kullanım gibi ticari promosyon.
+- Demo Engine'in cihaz başına Demo yolculuğu.
+- Ücretli erişim hakkı.
+- Ödeme işlemi.
+
+Bir kavramın süresi diğer kavramın süresini otomatik belirlemez.
+
+12.2 ERİŞİM HAKKI MODÜLÜ
+
+Gerçek kullanım hakkı ayrı modülde yönetilir. Gereksinime göre şunları destekleyebilir:
+- Hak türü.
+- Bağlı deneyim veya kaynak.
+- Başlangıç ve bitiş zamanı.
+- Kaynağı/oluşturma nedeni.
+- Yönetici tarafından verilme veya iptal edilme kaydı.
+- Aktif/pasif/tükenmiş/sona ermiş durum.
+- Yetki kontrolü.
+- Denetim kaydı.
+
+Hangi kimliğe bağlanacağı (deneyim, cihaz, token, müşteri veya başka bir nesne) iş kuralı kesinleşmeden tahmin edilmez. Kullanıcı hesabı/kayıt sistemi, daha önce belirlenmiş hesapsız ziyaretçi deneyimini bozacak şekilde varsayılan olarak eklenmez.
+
+12.3 30 GÜN KURALI
+
+V1.4 kapsamındaki 30 günlük ücretsiz standart deneyim planı korunur; ancak bu planın hangi varlığa ve hangi olayda bağlanacağı iş gereksinimi olarak açıkça belirlenmelidir.
+
+Sistem:
+- Süreyi güvenilir sunucu zamanına göre hesaplamalı.
+- Hak başlangıç ve bitiş zamanlarını kaydetmeli.
+- Süre dolunca otomatik ücret başlatmamalı.
+- Kullanıcı açıkça yetkilendirmedikçe ücretli plana dönüştürmemeli.
+- Site Builder'daki tanıtım metni değişti diye gerçek hak süresini değiştirmemeli.
+- Demo süresini veya deneyim süresini değiştirmemeli.
+
+Belirsiz ticari kural için tahminle üretim davranışı kurulmaz. Karar kaydına “iş kararı gerekli” olarak yazılır; geliştirme diğer bağımsız alanlarda sürer.
+
+12.4 60/90/120 GÜN VE ÖZEL PAKETLER
+
+Sistemde bu sürelerin veya 10/20/30 günlük görsel-video paketlerinin desteklenmesi gerekiyorsa bunlar ayrı yapılandırılabilir planlar olarak tanımlanır. Bunların tam olarak ürün süresi, içerik paketi süresi veya erişim hakkı anlamına geldiği doğrulanmadan birbirine eşit kabul edilmez.
+
+======================================================================
+13. ÖDEME ALTYAPISI — BAŞLANGIÇTA PASİF
+======================================================================
+
+13.1 ÜÇ BAĞIMSIZ KONTROL
+
+A. Web içeriğinin yayın/görünürlük durumu.
+B. Deneyimin satın alınabilirliği.
+C. Genel ödeme sisteminin canlı etkinlik durumu.
+
+Bu üç kontrol birbirinden bağımsızdır.
+
+13.2 BAŞLANGIÇ DURUMU
+
+- Genel ödeme sistemi PASİF.
+- Gerçek ödeme sağlayıcılarına canlı istek gönderilmez.
+- Site Builder yayınlama işlemi ödemeyi açamaz.
+- Deneyimi yayına almak onu otomatik satın alınabilir yapmaz.
+- Satın alınabilir deneyim bile genel ödeme sistemi pasifse ödeme başlatamaz.
+- Frontend'de buton gizlemek tek güvenlik kontrolü değildir; sunucu tarafı ödeme başlatma endpoint'i de engellenmelidir.
+- Test/sandbox ve canlı mod birbirinden ayrılır.
+- Canlı moda geçiş ayrı, yetkili ve denetim kayıtlı işlem olmalıdır.
+
+13.3 ÖDEME SAĞLAYICI ENTEGRASYONU
+
+İleride gerçek sağlayıcı (ör. PayTR veya seçilecek başka sağlayıcı) entegre edilirse:
+- Sağlayıcı kimlik bilgileri şifreli/güvenli yapılandırmada saklanır.
+- Gizli bilgiler maskelenir ve loglanmaz.
+- İmzalar ve callback doğrulanır.
+- İstekler idempotent işlenir.
+- Yinelenen callback aynı siparişi iki kez tamamlamaz.
+- Ödeme sonucu yalnızca tarayıcı yönlendirmesine güvenerek kabul edilmez.
+- Sunucu tarafı sağlayıcı doğrulaması yapılır.
+- Hata ve iade durumları tanımlanır.
+- Canlı ödeme açılmadan önce iş ve hukuk gereksinimleri doğrulanır.
+
+13.4 ÖDEME İLE ERİŞİM HAKKI
+
+Başarılı ödeme, ancak doğrulanmış ve yetkili ödeme akışından sonra tanımlı erişim hakkını oluşturabilir. Ödeme sistemi pasifken ödeme üzerinden hak oluşturulamaz. Yönetici tarafından ücretsiz verilen haklar ödeme kaydı varmış gibi gösterilmez.
+
+======================================================================
+14. SEO, PERFORMANS VE WEB KALİTESİ
+======================================================================
+
+14.1 SEO
+
+- Sayfa başlığı ve meta açıklaması.
+- Benzersiz, temiz URL.
+- Canonical URL gerektiğinde.
+- Sitemap.
+- Robots kuralları.
+- Sosyal paylaşım meta verileri.
+- Open Graph görseli.
+- Yapılandırılmış veri yalnızca doğru içerik için.
+- Taslak/önizleme ve hazırlık alanı indekslenmez.
+- Pasif veya bulunmayan deneyimlerin indeksleme davranışı güvenli yönetilir.
+- Slug değişiminde gerekli yönlendirmeler.
+- Sayfa başlığı ve açıklama boşsa güvenli varsayılan davranış.
+
+14.2 PERFORMANS
+
+- Gereksiz büyük JavaScript/CSS yüklenmez.
+- Görseller boyutlandırılır.
+- Lazy loading uygun yerlerde uygulanır.
+- Veritabanı sorguları ve indeksler tasarımla uyumlu olur.
+- Liste sayfalarında sayfalama/filtreleme gerekirse uygulanır.
+- Önbellek kullanılıyorsa yayınlama ve geri alma işlemleri ilgili cache'i doğru temizler.
+- Cache, pasif deneyim veya gizli taslak içeriğini yanlışlıkla göstermemelidir.
+- Büyük medya işleme web isteğini gereksiz yere bloklamamalıdır.
+
+14.3 ERİŞİLEBİLİRLİK VE MOBİL
+
+Kamu sitesi ve yönetim paneli mobil uyumlu olmalıdır. Tasarım yalnızca masaüstü ekran görüntüsüne göre kabul edilmez. Mobil tarayıcı, dokunma alanları, yatay taşma, video oynatma ve QR'den açılan deneyim akışı dikkate alınır.
+
+======================================================================
+15. GÜVENLİK VE GİZLİLİK
+======================================================================
+
+15.1 UYGULAMA GÜVENLİĞİ
+
+- SQL injection'a karşı parametreli sorgular/ORM.
+- XSS'e karşı bağlama uygun escape ve güvenli rich-text sanitize.
+- CSRF koruması.
+- Yetki kontrolü her hassas sunucu işleminde.
+- Giriş denemelerinde hız sınırlaması.
+- Oturum güvenliği.
+- Güvenli dosya yükleme.
+- Güvenli URL doğrulaması.
+- Hata ayrıntılarının ziyaretçiye sızmaması.
+- Güvenlik başlıklarının uygun yapılandırılması.
+- Gizli yapılandırma dosyalarının web kökünden erişilememesi.
+- Debug modunun canlı ortamda kapalı olması.
+- Yönetici işlemlerinin audit log'a yazılması.
+
+15.2 VERİ MİNİMİZASYONU
+
+Yalnızca işlev için gerekli veri toplanır. Demo istatistikleri veya erişim kayıtları için gereksiz kişisel veri saklanmaz. Saklama süresi ve silme politikası belirlenir. Kişisel veri işleniyorsa ilgili KVKK yükümlülükleri, çerez kullanımı ve bilgilendirme gereksinimleri gerçek uygulamaya göre değerlendirilir.
+
+15.3 GİZLİLİK SAYFALARI
+
+Hukuki metinler gerçek iş modeli, gerçek veri işleme ve gerçek şirket/iletişim bilgileriyle uyumlu olmalıdır. Şirket bilgileri sağlanmamışsa uydurulmaz. Yer tutucu metinler üretim sitesinde tamamlanmış hukuki metin gibi yayınlanmaz.
+
+15.4 GÜVENLİ HATA DAVRANIŞI
+
+- Ziyaretçiye anlaşılır hata/erişilemiyor sayfası.
+- Yöneticiye uygun yetki varsa daha ayrıntılı hata bilgisi.
+- Sunucu loglarında teknik detaylar.
+- Loglarda sırların maskelenmesi.
+- Başka deneyime veya kullanıcıya ait verinin yanlışlıkla gösterilmemesi.
+
+======================================================================
+16. VERİTABANI, MIGRATION VE VERİ BÜTÜNLÜĞÜ
+======================================================================
+
+16.1 VERİTABANI TASARIMI
+
+İlişkiler, foreign key'ler, benzersiz alanlar, gerekli indeksler ve silme davranışları baştan tasarlanır. Veritabanı yalnızca formların gerektirdiği kolonlardan ibaret düşünülmez; iş kuralları ve veri bütünlüğü korunur.
+
+16.2 MIGRATION
+
+- Şema değişiklikleri sürümlü migration dosyalarıyla yönetilir.
+- Migration'lar tekrarlanabilir/izlenebilir olmalıdır.
+- Uygulanmış migration geçmişi kaydedilir.
+- Canlı veritabanında migration öncesi yedekleme ve geri dönüş planı yapılır.
+- Elle SQL çalıştırılması gerekiyorsa yalnızca açıkça gerekçelendirilmiş, yedekli ve kayıtlı bir istisna olarak ele alınır; normal yöntem migration'dır.
+- Migration başarısız olursa sonraki sürüme geçilmez; önce tutarlılık düzeltilir.
+- Migration registry ile gerçek veritabanı şeması arasında fark varsa raporlanır.
+
+16.3 VERİ SİLME
+
+İlişkili verilerde kontrolsüz cascade delete kullanılmaz. Deneyim, medya, yayın sürümü, QR bağlantısı ve audit kayıtlarının yaşam döngüsü açıkça belirlenir. Audit kayıtları normal içerik silme işlemiyle kaybolmamalıdır.
+
+16.4 VERİTABANI İZOLASYONU
+
+Hazırlık ve canlı ortam ayrı veritabanları kullanmalıdır. Hazırlık veritabanı canlı veritabanına yanlışlıkla bağlanırsa uygulama güvenli biçimde çalışmayı durduracak ortam kontrolleri tercih edilir.
+
+======================================================================
+17. YEDEKLEME, GERİ YÜKLEME VE OPERASYON
+======================================================================
+
+17.1 YEDEK KAPSAMI
+
+- Veritabanı.
+- Uygulama sürümüne ait kaynak kodu/deployment paketi.
+- Özel medya dosyaları ve gerekli metadata.
+- Yapılandırmanın güvenli, sırları koruyan kopyası veya yeniden kurulum yönergesi.
+- Migration geçmişi.
+- Gerekli yayın sürümleri.
+
+Gizli anahtarlar yedeklerde korunur; erişim yetkileri kısıtlanır. Yedeklerin web üzerinden indirilebilen dizinde tutulmasına izin verilmez.
+
+17.2 YEDEKLEME PLANI
+
+- Yedekleme sıklığı sunucu ve veri değişim hızına göre belirlenir.
+- Başarısız yedeklemeler görünür hata oluşturur.
+- Yedek tarihi, kapsamı ve sonucu kaydedilir.
+- Saklama süresi tanımlanır.
+- Disk alanı ve yedek büyümesi izlenir.
+
+17.3 GERİ YÜKLEME
+
+Yedek almak tek başına yeterli değildir. Geri yükleme yönergesi bulunmalı ve mümkün olduğunda hazırlık ortamında geri yükleme işlemi doğrulanmalıdır. Canlı veriye geri yükleme yalnızca kontrollü, yetkili ve yedekli işlem olmalıdır.
+
+17.4 ZAMANLANMIŞ GÖREVLER
+
+Gerektiği ölçüde:
+- Süresi dolan deneyimleri kontrol etme.
+- Tamamlanmamış yüklemeleri temizleme.
+- Video işleme kuyruğu.
+- Geçici dosya temizliği.
+- Eski önizleme token'larını geçersizleştirme.
+- Yedekleme.
+- Sistem sağlık kontrolü.
+- İstatistik özetleme.
+görevleri tanımlanır.
+
+Zamanlanmış görev başarısız olduğunda loglanır. Erişim güvenliği yalnızca cron'un zamanında çalışmasına bağlı kalmaz.
+
+17.5 SİSTEM SAĞLIĞI
+
+Yöneticiye uygun düzeyde şu durumlar gösterilebilir:
+- Uygulama sürümü.
+- Veritabanı bağlantı durumu.
+- Son başarılı yedek.
+- Bekleyen video işleme işleri.
+- Disk alanı uyarısı.
+- Son zamanlanmış görev sonucu.
+- Son migration durumu.
+- Hazırlık/canlı ortam ayrımı.
+
+Gizli sistem bilgileri kamuya açık endpoint'te gösterilmez.
+
+======================================================================
+18. GELİŞTİRME VE YAYIN GEÇMİŞİ
+======================================================================
+
+18.1 AMAÇ
+
+Geliştirme sürecinin hangi aşamada olduğu, hangi dosyaların değiştiği ve neyin gerçekten teslim edildiği izlenebilmelidir.
+
+18.2 TESLİMAT KAYDI
+
+Her aşama için:
+- Aşama numarası ve adı.
+- Başlangıç/tamamlanma tarihi.
+- Kaynak kodu sürümü veya commit/hash.
+- Değişen dosyalar.
+- Migration'lar.
+- Kurulum/dağıtım kaydı.
+- Hazırlık URL'si.
+- Gerçekten çalışan özellikler.
+- Tamamlanmamış özellikler.
+- Bilinen sorunlar.
+- Test seviyesi ve sonuçları.
+- Bir sonraki aşama.
+kaydedilir.
+
+18.3 DAĞITIM KAYDI
+
+Dağıtım ekranı varsa:
+- Kullanıcının yüklediği paket/sürüm.
+- Yükleme zamanı.
+- Hedef ortam.
+- İşlemi yapan.
+- Migration durumu.
+- Dosya dağıtımı yapılmış mı?
+- Sonuç ve hata ayrıntısı.
+- Geri alma referansı.
+bilgilerini izler.
+
+Bu ekran varsayılan olarak otomatik dosya dağıtımı yapmaz. Plesk'e kendiliğinden dosya yazmaz. Kullanıcı tarafından belirlenen kontrollü dosya yükleme ve yayın akışının kaydını tutar.
+
+18.4 SÜRÜMLEME
+
+- Her teslimatta bir sürüm numarası veya benzersiz build kimliği bulunur.
+- Geliştirme sırasında tamamlanmış çalışan sürümler korunur.
+- Yeni aşama önceki aşamanın üzerine kontrolsüz biçimde iki kez eklenmez.
+- Dosyalar arka arkaya kopyalanarak çift kod oluşturulmaz.
+- Dağıtım öncesi dosya bütünlüğü ve sürüm kontrolü yapılır.
+- Canlı ve hazırlık kodunun hangi sürümde olduğu anlaşılabilir olmalıdır.
+
+======================================================================
+19. UYGULAMA AŞAMALARI — BAĞLAYICI İLERLEME SIRASI
+======================================================================
+
+Bu sıra bağımlılıklara göre belirlenmiştir. Her aşamada kullanıcı gerçek sunucudaki hazırlık alanında ilerlemeyi görebilmelidir. Aşamalar, önceki temel tamamlanmadan rastgele geçilmez. Bir modülün kapsamı tamamlanmamışsa eksik kalemler açıkça kaydedilir.
+
+AŞAMA 0 — SUNUCU VE MEVCUT DURUM KEŞFİ
+- Sunucu/Plesk/alan adı/PHP/DB özelliklerini incele.
+- Mevcut canlı site varsa envanter çıkar ve dokunmadan koru.
+- Web kökü, uygulama kökü, dosya izinleri, SSL, cron/worker imkânlarını belirle.
+- Yedekleme ve geri yükleme seçeneklerini öğren.
+- Sunucunun kaynaklarını ve video işleme kapasitesini değerlendir.
+- Teknik mimari karar kaydı oluştur.
+TESLİMAT: Sunucu envanteri, teknik karar kaydı, önerilen hazırlık alanı ve risk listesi.
+GÖRÜNÜRLÜK: Henüz uygulama ekranı gerekmeyebilir; fakat gerçek sunucu bilgilerine dayalı rapor gerekir.
+DURDURMA KOŞULU: Güvenli hazırlık alanı ve veritabanı ayrımı kurulamıyorsa canlı dosyaları değiştirmeden kullanıcıya engel ve çözüm bildirilir.
+
+AŞAMA 1 — HAZIRLIK ORTAMI VE PROJE İSKELETİ
+- Ayrı hazırlık uygulama alanı oluştur.
+- Ayrı hazırlık veritabanı oluştur.
+- HTTPS ve erişim kısıtlaması kur.
+- Hazırlık ortamını arama motorlarından gizle.
+- Yapılandırma sırlarını güvenli ayır.
+- Proje iskeleti, yönlendirme, hata yönetimi ve loglama kur.
+- Kaynak kodu sürümleme yöntemini belirle.
+TESLİMAT: Gerçek sunucuda açılan hazırlık URL'si, temel uygulama sayfası, proje yapısı ve kurulum yönergesi.
+KABUL: Canlı siteye zarar vermeden hazırlık uygulaması açılabilmeli.
+
+AŞAMA 2 — VERİTABANI VE GÜVENLİ SÜPER ADMİN TEMELİ
+- Migration altyapısı.
+- Güvenli yönetici hesabı oluşturma.
+- Oturum ve CSRF güvenliği.
+- Yönetim paneli temel yerleşimi.
+- Yetki kontrolü ve audit log temeli.
+- Sistem yapılandırma ekranının güvenli temeli.
+TESLİMAT: Hazırlık URL'sinde giriş yapılabilen Süper Admin, temel menü ve veritabanı migration kayıtları.
+KABUL: Yetkisiz kullanıcı yönetim ekranlarına erişememeli; varsayılan parola kalmamalı.
+
+AŞAMA 3 — DENEYİM VERİ MODELİ VE YÖNETİMİ
+- Deneyim CRUD.
+- Taslak/yayın/pasif/süre sonu durumları.
+- Başlangıç, saat dilimi ve süre.
+- Kalıcı public URL.
+- Günlük içerik modeli.
+- Sunucu tarafı erişim kuralları.
+TESLİMAT: Hazırlık ortamında deneyim oluşturulabilen ve yönetilebilen gerçek ekranlar.
+KABUL: Deneyim verisinin tek sahibi Deneyim Yönetimi olmalı.
+
+AŞAMA 4 — MEDYA KÜTÜPHANESİ VE DOSYA GÜVENLİĞİ
+- Güvenli yükleme.
+- Özel dosya depolama.
+- Medya metadata'sı.
+- Medya koleksiyonu/alan ayrımı.
+- Görsel önizleme ve alt metin.
+- Referans kontrolü ve güvenli arşivleme.
+TESLİMAT: Gerçek sunucuda dosya yüklenebilen, listelenebilen ve doğru izinlerle görüntülenebilen medya yönetimi.
+KABUL: Yetkisiz kişi özel dosyaya erişememeli; bir alandaki medya işlemi diğer alanı bozmamalı.
+
+AŞAMA 5 — PARÇALI VİDEO YÜKLEME VE İŞLEME
+- Devam edebilen yükleme oturumu.
+- Parçaların izlenmesi.
+- Yeniden deneme.
+- Birleştirme.
+- Dosya doğrulama.
+- Arka plan video işleme (sunucu destekliyorsa).
+- Hata/temizleme durumu.
+TESLİMAT: Mobil cihazdan test amaçlı video yükleme ekranı ve gerçek durum göstergesi.
+KABUL: İşlem durumu gerçek olmalı; desteklenmeyen işlem çalışıyormuş gibi sunulmamalı.
+
+AŞAMA 6 — QR/NFC VE ZİYARETÇİ DENEYİM AKIŞI
+- Kalıcı URL.
+- QR üretme/indirme.
+- NFC için kopyalanabilir gerçek URL.
+- Kamuya açık deneyim sayfası.
+- Süre/durum/yetki kontrolü.
+- Mobil medya görüntüleme.
+TESLİMAT: Hazırlık alanında gerçek QR tarandığında deneyime erişim akışı.
+KABUL: Taslak/pasif/süresi dolmuş deneyim içerik sızdırmamalı.
+
+AŞAMA 7 — DEMO ENGINE
+- Demo'ya özel medya havuzu.
+- Demo aktif/pasif.
+- Günlük içerik atama.
+- Cihaz belirteci ve gizlilik yaklaşımı.
+- 7 gün varsayılan, 1–365 gün ayarlanabilir Demo yolculuğu.
+- Demo QR/URL.
+- Ayrı istatistikler.
+TESLİMAT: Demo yönetim ekranı ve gerçek sunucuda açılan Demo URL'si.
+KABUL: Site Builder tanıtımı Demo motorunun yerini almamalı; Demo pasifken erişim kuralları çalışmalı.
+
+AŞAMA 8 — SITE BUILDER TEMELİ
+- Sayfa kayıtları.
+- Güvenli bileşen/section sistemi.
+- Bölüm sıralama.
+- Taslak ve yayın sürümü.
+- Önizleme token'ı.
+- Tema ayarları.
+TESLİMAT: Yönetici sayfa oluşturup bölüm ekleyebildiği, sıralayabildiği ve taslak önizleyebildiği ekran.
+KABUL: Taslak ziyaretçiye görünmemeli; kod değiştirmeden temel içerik düzenlenebilmeli.
+
+AŞAMA 9 — TAM WEB ARAYÜZÜ YÖNETİMİ
+- Ana sayfa.
+- Menü/footer.
+- Hero slider.
+- QR/NFC/QR+NFC tanıtımları.
+- Deneyim listesi ve dinamik detay şablonu.
+- Demo tanıtımı.
+- Ücretsiz kullanım tanıtımı.
+- Kullanım alanları, nasıl çalışır, SSS.
+- Hakkımızda/iletişim ve hukuki sayfalar için altyapı.
+- Mobil/tablet/masaüstü önizleme.
+TESLİMAT: Web sitesinin olağan metin, görsel, bölüm sırası ve sayfa değişikliklerinin Site Builder'dan yönetilebildiği hazırlık sitesi.
+KABUL: İkinci yönetim paneli olmamalı; deneyim kaydı kopyalanmamalı; Demo gerçek durumuyla uyumlu olmalı.
+
+AŞAMA 10 — KULLANIM HAKKI VE ÜCRETSİZ PLAN
+- Erişim hakkı veri modeli.
+- Süre ve durum kuralları.
+- Yönetici tarafından hak verme/iptal etme için gerekli yetki.
+- Deneyim süresi, Demo süresi ve promosyon ayrımı.
+- Belirsiz iş kararlarını kayıt altına alma.
+TESLİMAT: İş kuralı doğrulanmışsa hak yönetimi; doğrulanmamışsa belirsizlik kaydı ve güvenli varsayılan davranış.
+KABUL: Site Builder tanıtımı gerçek hak üretmemeli; hak süresi ücretli dönüşümü otomatik başlatmamalı.
+
+AŞAMA 11 — ÖDEMEYE HAZIRLIK, PASİF MOD
+- Ödeme ayarları ekranı.
+- Genel ödeme anahtarı kapalı.
+- Satın alınabilirlikten ayrı kontrol.
+- Sunucu tarafı ödeme başlatma engeli.
+- Test/canlı yapılandırma ayrımı.
+- Sağlayıcı sırlarının güvenli saklanması.
+TESLİMAT: Ödeme sistemi kapalıyken diğer modüller çalışmaya devam etmeli.
+KABUL: Hiçbir yayınlama veya Site Builder işlemi ödeme sistemini açamamalı.
+
+AŞAMA 12 — SEO, ERİŞİLEBİLİRLİK VE PERFORMANS İYİLEŞTİRMELERİ
+- SEO alanları.
+- Sitemap/robots.
+- Sosyal paylaşım verileri.
+- Responsive iyileştirmeler.
+- Erişilebilirlik kontrolleri için kod hazırlığı.
+- Görsel optimizasyonu ve uygun cache.
+TESLİMAT: Site Builder'dan yönetilen SEO alanları ve optimize edilmiş kamu arayüzü.
+KABUL: Hazırlık/taslak içerik indekslenmemeli.
+
+AŞAMA 13 — OPERASYON, YEDEKLEME, GÖREVLER VE SÜRÜMLEME
+- Yedekleme akışı.
+- Geri yükleme yönergesi.
+- Zamanlanmış görevler.
+- Video worker işletimi.
+- Sistem sağlığı ekranı.
+- Geliştirme/dağıtım geçmişi.
+- Kontrollü sürümleme ve geri alma.
+TESLİMAT: Kurulum/işletim belgeleri, yedekleme kayıtları ve sürüm takibi.
+KABUL: Dağıtım geçmişi otomatik dosya dağıtımı anlamına gelmemeli; migration durumu görünür olmalı.
+
+AŞAMA 14 — BÜTÜNLEŞTİRME TAMAMLAMA VE KOD DONDURMA
+- Modüller arası bağların gözden geçirilmesi.
+- Eksik özelliklerin listelenmesi.
+- Belirsiz iş kararlarının listelenmesi.
+- Gerçek sunucudaki hazırlık sürümünün kayıt altına alınması.
+- Test planının son hâle getirilmesi.
+TESLİMAT: Tamamlanma matrisi ve test öncesi sürüm kimliği.
+KABUL: Kapsamlı son test başlamadan önce ana modüller ve entegrasyonlar tamamlanmış olmalı.
+
+AŞAMA 15 — TEK PLANLI KAPSAMLI SON TEST VE HATA DÜZELTME
+Bütün ana modüller tamamlandıktan sonra uygulanır. Her modül geliştirilirken tekrar tekrar kapsamlı test döngüsü çalıştırılmaz. Bu son aşama; güvenlik, uçtan uca, mobil, entegrasyon, veri bütünlüğü, yükleme, yayınlama, yedekleme/geri yükleme ve sunucu kontrollerini kapsar.
+TESLİMAT: Gerçek sonuçları içeren test raporu, giderilen hatalar, kalan riskler ve nihai sürüm.
+KABUL: Hiçbir test sonucu uydurulmaz. Yapılmayan testler “test edilmedi” olarak işaretlenir.
+
+AŞAMA 16 — KONTROLLÜ CANLIYA ALMA
+- Canlı öncesi yedek.
+- Kod ve yapılandırma kontrolü.
+- Migration planı.
+- Medya ve dosya izinleri kontrolü.
+- SSL, cron ve worker kontrolü.
+- Yayın ve geri alma planı.
+- Kullanıcının belirlediği onay.
+TESLİMAT: Yayın sürümü, uygulanan adımlar, doğrulanan URL'ler ve geri alma talimatı.
+KABUL: Açık onay olmadan canlı siteyi etkileyen dağıtım yapılmaz.
+
+======================================================================
+20. KAPSAMLI SON TEST PLANI
+======================================================================
+
+Bu bölüm geliştirme aşamalarında kapsamlı test yapılmasını değil, bütün ana modüller tamamlandıktan sonra son testte uygulanacak planı tanımlar.
+
+20.1 KİMLİK VE YETKİ
+- Yetkisiz kullanıcı admin ekranına erişemiyor mu?
+- Oturum ve CSRF koruması çalışıyor mu?
+- Yönetici olmayan kullanıcı yayın/ödeme/ayar işlemi yapamıyor mu?
+- Oturum sonlandırma ve parola akışı güvenli mi?
+
+20.2 DENEYİM
+- Deneyim oluşturma/düzenleme.
+- Taslak/yayın/pasif durumları.
+- Başlangıç ve bitiş zamanı.
+- Saat dilimi ve süre sonu.
+- Günlük içerik ataması.
+- Kalıcı URL.
+- Bulunmayan/pasif/süresi dolmuş deneyimin güvenli davranışı.
+
+20.3 MEDYA VE VİDEO
+- İzinli dosya türü.
+- Yasak dosya türü.
+- Maksimum boyut.
+- Bozuk dosya.
+- Yükleme kesintisi ve devam ettirme.
+- Yinelenen parça.
+- Birleştirme.
+- Video işleme hatası.
+- Disk yetersizliği davranışı.
+- Yetkisiz dosya erişimi.
+- Referanslı medyanın silinmeye karşı korunması.
+
+20.4 QR/NFC
+- QR gerçek doğru URL'yi içeriyor mu?
+- QR telefonla taranabiliyor mu?
+- NFC için verilen URL doğru mu?
+- Kalıcı bağlantı slug değişiminden etkileniyor mu?
+- Pasif/süresi dolmuş deneyim doğru davranıyor mu?
+
+20.5 DEMO
+- Demo aktif/pasif.
+- Varsayılan 7 gün ve yapılandırılabilir süre.
+- Cihaz belirteci davranışı.
+- Günlük içerik.
+- Ayrı medya havuzu.
+- Ayrı istatistik.
+- Demo pasifken Site Builder CTA'sı.
+- Demo ve standart ücretsiz kullanımın birbirinden ayrılması.
+
+20.6 SITE BUILDER
+- Sayfa oluşturma/düzenleme.
+- Bölüm ekleme/sıralama/gizleme.
+- Tema ayarları.
+- Menü/footer.
+- Hero slider.
+- Medya referansları.
+- Deneyim listesi.
+- Deneyim pasif olduğunda listeden kaldırılması.
+- Taslak önizlemesi.
+- Yayınlama.
+- Yayın geçmişi.
+- Geri alma.
+- Hatalı taslağın canlı sürümü bozmaması.
+- Mobil/tablet/masaüstü.
+- SEO ve indeksleme.
+
+20.7 ÖDEME
+- Genel anahtar başlangıçta kapalı mı?
+- Ödeme endpoint'i sunucu tarafında engelleniyor mu?
+- Site Builder yayınlaması ödeme sistemini açamıyor mu?
+- Satın alınabilirlik ve genel ödeme durumu ayrı mı?
+- Canlı sağlayıcıya yanlışlıkla istek gönderilmiyor mu?
+
+20.8 VERİTABANI VE OPERASYON
+- Migration sırası.
+- Migration registry tutarlılığı.
+- Foreign key ve benzersiz alanlar.
+- Yedekleme.
+- Geri yükleme.
+- Cron/worker.
+- Geçici dosya temizliği.
+- Sürüm ve dağıtım kayıtları.
+- Hata logları.
+- Canlı/hazırlık veritabanı ayrımı.
+
+20.9 GİZLİLİK VE GÜVENLİK
+- XSS, SQL injection ve CSRF önlemleri.
+- Yetki atlama.
+- Dosya yükleme kontrolleri.
+- Token sızıntısı.
+- Gizli yapılandırma erişimi.
+- Taslak içeriğe yetkisiz erişim.
+- Kişisel veri minimizasyonu ve saklama süresi.
+- Güvenli hata sayfaları.
+
+20.10 MOBİL VE GERÇEK SUNUCU
+- Gerçek Android/iOS mobil tarayıcılarla uygun kontroller.
+- QR tarama akışı.
+- Büyük video yükleme.
+- Mobil menü ve sayfa düzeni.
+- SSL ve alan adı.
+- Gerçek sunucuda log/worker/migration davranışı.
+- Hazırlık alanının arama motorlarına kapalı olması.
+- Canlı alanın etkilenmediğinin kontrolü.
+
+TEST SONUCU ETİKETLERİ:
+- PASS: Test başarıyla yürütüldü ve geçti.
+- FAIL: Test yürütüldü ve başarısız oldu.
+- BLOCKED: Ortam/erişim/bağımlılık nedeniyle yürütülemedi.
+- NOT RUN: Henüz yapılmadı.
+- NOT APPLICABLE: Gerekçesi belgelenmiş şekilde uygulanamaz.
+
+Yalnızca kodu görmek veya ekranın açılması, bütün testin geçtiğini kanıtlamaz. Test kanıtı ve kapsamı raporda belirtilir.
+
+======================================================================
+21. GELİŞTİRME SIRASINDA İŞLETİLECEK İLERLEME RAPORU
+======================================================================
+
+Her aşama sonunda aşağıdaki şablon doldurulur:
+
+AŞAMA:
+TARİH:
+KAYNAK KODU SÜRÜMÜ / BUILD:
+HEDEF ORTAM: Hazırlık / Canlı
+GERÇEK URL:
+OLUŞTURULAN MODÜLLER:
+GERÇEKTEN ÇALIŞAN İŞLEVLER:
+TAMAMLANMAYAN İŞLER:
+VERİTABANI MIGRATION'LARI:
+DEĞİŞEN ANA DOSYALAR:
+GÜVENLİK / YETKİ NOTLARI:
+TEMEL KONTROLLER:
+KAPSAMLI TEST DURUMU: Son aşamaya bırakıldı / yapılmadı / gerekçesi
+BİLİNEN RİSKLER:
+KULLANICIDAN GEREKEN İŞLEM:
+SONRAKİ AŞAMA:
+
+İlerleme raporu kısa ama doğrulanabilir olmalıdır. “Her şey tamam” gibi kanıtsız ifadeler kullanılmaz. Ekran görüntüsü veya URL sağlanabiliyorsa gerçek olan sağlanır. URL mevcut değilse neden olmadığı açıkça söylenir.
+
+======================================================================
+22. KAPSAM VE KARAR YÖNETİMİ
+======================================================================
+
+22.1 BELİRSİZLİKLER
+
+Geliştirme sırasında eksik iş kuralı görülürse:
+- Etkilenen özellik belirlenir.
+- Hangi kararın eksik olduğu yazılır.
+- O karara bağlı olmayan modüller geliştirmeye devam eder.
+- Geri döndürülmesi zor veya ticari etkisi olan davranış tahminle uygulanmaz.
+- Güvenli varsayılan davranış seçilebiliyorsa açıkça belgelenir.
+- Gerekli kullanıcı kararı, tam olarak hangi seçeneğin neden gerektiğiyle sorulur.
+
+22.2 DEĞİŞİKLİK KAYDI
+
+Kapsam değişiklikleri ana belgeye veya karar kayıtlarına eklenir. Bir özelliğin gereksinimi sessizce kaldırılmaz. Yeni kararlar eski gereksinimle çelişiyorsa çelişki açıkça çözülür.
+
+22.3 TAMAMLANMA TANIMI
+
+Bir modül yalnızca kod yazıldığı için tamamlanmış sayılmaz. Tamamlanma için:
+- İlgili yönetim ekranı bulunmalı.
+- Gerekli veritabanı yapısı ve migration bulunmalı.
+- Sunucu tarafı iş kuralları çalışmalı.
+- Yetkilendirme uygulanmalı.
+- İlgili modüllerle entegrasyon yapılmalı.
+- Hata ve boş durumlar ele alınmalı.
+- Kullanıcıya gerçek durum gösterilmeli.
+- Belgelendirme ve ilerleme kaydı oluşturulmalı.
+- Kapsamlı kabul testleri son aşamaya bırakılmışsa bu açıkça belirtilmeli.
+
+======================================================================
+23. SON TESLİMAT PAKETİ
+======================================================================
+
+Nihai teslimatta mümkün olduğunca şu öğeler bulunmalıdır:
+1. Kaynak kodu ZIP'i.
+2. Sürüm numarası/build kimliği.
+3. Kurulum talimatı.
+4. Sunucu gereksinimleri.
+5. Güvenli yapılandırma örneği (gerçek sırlar olmadan).
+6. Veritabanı migration dosyaları.
+7. Kurulum/ilk Süper Admin hesabı oluşturma yöntemi.
+8. Cron/worker yapılandırma talimatları.
+9. Medya depolama ve izin ayarları.
+10. Yedekleme ve geri yükleme talimatları.
+11. Güncelleme ve geri alma talimatları.
+12. Modül tamamlanma matrisi.
+13. Son test raporu.
+14. PASS/FAIL/BLOCKED/NOT RUN listesi.
+15. Bilinen sorunlar ve kalan riskler.
+16. Gerçek sunucuya kurulan sürüm ve URL bilgileri.
+17. Canlıya alınmışsa dağıtım ve geri alma kayıtları.
+
+ZIP içinde gerçek parolalar, ödeme sırları, `.env` canlı dosyası, erişim token'ları veya kullanıcı verileri bulunmamalıdır.
+
+======================================================================
+24. YAPILMAMASI GEREKENLER
+======================================================================
+
+- Eski bir ORVIONART kod tabanı veya eski veritabanı varmış gibi davranmak.
+- Yeni Süper Admin dışında ikinci bir yönetim paneli kurmak.
+- Site Builder'da deneyim verilerini kopyalamak.
+- Site Builder'ın Demo Engine'i veya ödeme sistemini doğrudan etkinleştirmesi.
+- Ödeme sistemini varsayılan açık kurmak.
+- Taslak sayfaları kamuya açık göstermek.
+- Kullanıcıdan bağımsız olarak canlı siteyi kontrolsüz değiştirmek.
+- Canlı ve hazırlık veritabanını karıştırmak.
+- Dosyaları web kökünde herkese açık saklamak.
+- Sırları kaynak koda veya loglara yazmak.
+- Uydurma test sonucu, URL, kurulum veya ekran görüntüsü üretmek.
+- Tamamlanmamış butonları çalışıyormuş gibi göstermek.
+- Her modül için ayrı, birbiriyle uyumsuz medya yükleme sistemi yazmak.
+- QR/NFC tanıtım görselini gerçek işlev gibi sunmak.
+- Demo'nun genel URL süresi ile cihaz başına Demo yolculuğu süresini karıştırmak.
+- Deneyim süresi, 30 günlük ücretsiz plan ve genel promosyonu tek kavram yapmak.
+- Ücretsiz hakkı otomatik ücretli hâle getirmek.
+- Veritabanı migration zincirini doğrulamadan sonraki sürüme geçmek.
+- Aynı dosyayı iki kez arka arkaya ekleyerek kod kopyalanmasına yol açmak.
+- Yedek almadan riskli canlı değişiklik yapmak.
+- Kapsamlı testleri ana modüller bitmeden tekrar tekrar çalıştırıp geliştirme sırasını bozmak.
+- Buna karşılık, kodun temel sözdizimi ve migration tutarlılığını tamamen görmezden gelmek.
+- Hukuki metinlerde gerçek olmayan şirket veya iletişim bilgisi uydurmak.
+- Gerekli iş kararı yokken geri dönüşü zor ticari kuralı tahminle uygulamak.
+
+======================================================================
+25. SON YÖNETİM TALİMATI
+======================================================================
+
+Bu projeyi tek bir bütün olarak ele al. Önce sunucuyu incele, sonra gerçek sunucuda canlı siteyi bozmayan görünür hazırlık alanını kur. Kullanıcı, geliştirme ilerledikçe çalışan ekranları gerçek URL üzerinden görebilsin.
+
+Geliştirme sırasını bu belgedeki aşamalara göre uygula. Her aşamanın sonunda gerçek teslimat ve ilerleme raporu üret. Ana modülleri ortak mimariye bağla; aynı veriyi birden fazla yerde bağımsız yönetme. Site Builder'ı tüm herkese açık web arayüzünün merkezi yönetim noktası yap. Deneyim Yönetimi, Demo Engine, kullanım hakları ve ödeme modüllerinin iş kurallarını ayrı tut.
+
+Kullanıcı gerçek sunucuda ilerleme görmek istese de canlı siteyi izinsiz ve kontrolsüz değiştirme. Önce hazırlık alanında göster; canlıya geçişi ayrı ve kontrollü adım olarak uygula. Dağıtım geçmişi kayıt altına alınsın; açıkça istenmedikçe otomatik dosya dağıtımı yapılmasın.
+
+Kapsamlı test aşamasını bütün ana modüller tamamlandıktan sonraya bırak. Geliştirme sırasında gerekli temel statik ve yapısal kontrolleri yap. Son testte her sonucu gerçek kanıtla raporla; yapılmayan kontrolleri geçti olarak gösterme.
+
+Bütün işlerin sonunda kullanıcıya çalışan sürüm, gerçek URL'ler, kaynak kodu ZIP'i, kurulum ve geri alma talimatları, modül tamamlanma matrisi ve son test raporunu teslim et.
+
+PROJENİN BAŞLANGIÇ NOKTASI:
+AŞAMA 0 — GERÇEK SUNUCU VE MEVCUT DURUM KEŞFİ.
+
+İlk görev doğrudan bütün modülleri aynı anda kodlamaya başlamak değildir. İlk görev, gerçek sunucu koşullarını doğrulamak ve canlı siteyi riske atmadan görünür geliştirme alanını hazırlamaktır. Bu tamamlandığında kullanıcıya somut sonuç ve bir sonraki adım bildirilir.
+
+BELGE SONU

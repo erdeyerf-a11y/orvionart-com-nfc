@@ -1,0 +1,16 @@
+ORVIONART — NİHAİ SUNUCU TESLİMİ İÇİN SONRADAN KULLANILACAK ŞABLON
+
+BU DOSYA ŞİMDİ MANUS'A GÖNDERİLMEYECEKTİR. Platformun tüm modülleri burada geliştirilip bütünleşik ZIP hazır olduğunda nihai pakete dahil edilecektir.
+
+Nihai teslimat sırasında Manus:
+1. ZIP içindeki bağlayıcı V1.5 talimatını ve kurulum belgelerini okuyacak.
+2. Sunucu envanterini doğrulayacak; PHP/Composer/DB/SSL/dizin izinlerini kanıtlarıyla raporlayacak.
+3. İzole staging ortamı ve ayrı veritabanı kuracak; canlıya kontrolsüz yazmayacak.
+4. Kaynak kodu, migration'lar ve bağımlılıkları güvenli şekilde kuracak.
+5. Kurulum komutlarını, migration listesini, gerçek URL'leri ve uygulama loglarını raporlayacak.
+6. Özellik bazında testleri çalıştıracak; PASS / FAIL / BLOCKED / NOT RUN ayrımını koruyacak.
+7. Uygulanmamış veya test edilmemiş hiçbir özelliği tamamlanmış göstermeyecek.
+8. Gizli bilgileri rapora/ZIP'e koymayacak.
+9. Kullanıcının açık onayı olmadan canlı yayına geçmeyecek.
+
+Nihai paket oluşturulurken bu belge platformun gerçek kapsamına göre güncellenecektir.
