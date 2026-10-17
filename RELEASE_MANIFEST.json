@@ -2,7 +2,7 @@
     "format": "orvionart-release-manifest-v1",
     "application": "ORVIONART",
     "version": "0.10.74",
-    "generated_at_utc": "2026-10-17T09:23:26Z",
+    "generated_at_utc": "2026-10-17T09:24:41Z",
     "manifest_scope": "Distributable source files only; excludes secrets, runtime data, vendor, historical ZIPs, and this manifest.",
     "file_count": 290,
     "files": {
@@ -472,7 +472,7 @@
         },
         "docs/DEVELOPMENT_STATUS.md": {
             "bytes": 16439,
-            "sha256": "f40a5b713b8da5dceab706e526254e722f035c248e90d4b68355842fc2252f75"
+            "sha256": "2f75d101edbbf187bd65fcc08e81d029aedd8f3a573e5d6194c56b077c898ac4"
         },
         "docs/ENVIRONMENT_TEMPLATE_0_10_42.md": {
             "bytes": 1585,
@@ -784,7 +784,7 @@
         },
         "docs/TXT_GAP_REVIEW_0_10_74.md": {
             "bytes": 8946,
-            "sha256": "3d3937053d5524ee3df9213846cdca058ae53b44e79b22b03d789cbd1ce063b5"
+            "sha256": "74ca51802e025458c56d48a1df39a66bc366bfb8ce87068e0844bf887d7c8281"
         },
         "docs/UPDATE_PACKAGE_PREFLIGHT_0_10_74.md": {
             "bytes": 1943,
@@ -868,7 +868,7 @@
         },
         "docs/V1_5_GAP_MATRIX_0_10_74.md": {
             "bytes": 2725,
-            "sha256": "0e0271cce26ad0822edbe7f8efe7576cc6a9c3b40384bb1c92da5af68425c248"
+            "sha256": "d73fc070a345a03c7d18a8395397b8a50886f15cc549a0ddd3dff04130dea800"
         },
         "docs/VIDEO_PROCESSING_QUEUE_0_10_51.md": {
             "bytes": 4401,
