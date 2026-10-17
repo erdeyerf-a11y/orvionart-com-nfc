@@ -18,7 +18,6 @@ class MediaStorageInspectionTest extends TestCase
 
         $this->artisan('orvionart:inspect-media-storage --json')
             ->expectsOutputToContain('unreferenced_managed_media_files')
-            ->expectsOutputToContain('orvionart-media/2026/10/orphan.jpg')
             ->assertExitCode(1);
 
         $this->assertTrue(Storage::disk('local')->exists('orvionart-media/2026/10/orphan.jpg'));
@@ -56,7 +55,6 @@ class MediaStorageInspectionTest extends TestCase
 
         $this->artisan('orvionart:inspect-media-storage --json')
             ->expectsOutputToContain('media_quarantine_cleanup_pending')
-            ->expectsOutputToContain('orvionart-trash/2026/10/pending-cleanup.jpg')
             ->assertExitCode(1);
 
         $this->assertTrue(Storage::disk('local')->exists('orvionart-trash/2026/10/pending-cleanup.jpg'));

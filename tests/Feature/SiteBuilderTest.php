@@ -143,6 +143,7 @@ class SiteBuilderTest extends TestCase
     public function test_production_search_indexing_is_opt_in_and_disabled_by_default(): void
     {
         config(['app.env' => 'production', 'app.url' => 'https://orvionart.example', 'orvionart.public_indexing_enabled' => false]);
+        \Illuminate\Support\Facades\URL::forceRootUrl('https://orvionart.example');
 
         $this->get('/robots.txt')->assertOk()->assertSee('Disallow: /')->assertDontSee('Sitemap:');
         $this->get('/sitemap.xml')->assertOk()->assertSee('<urlset', false)->assertDontSee('<url>', false);
@@ -154,6 +155,7 @@ class SiteBuilderTest extends TestCase
     public function test_production_sitemap_lastmod_tracks_publication_not_later_draft_edits(): void
     {
         config(['app.env' => 'production', 'app.url' => 'https://orvionart.example', 'orvionart.public_indexing_enabled' => true]);
+        \Illuminate\Support\Facades\URL::forceRootUrl('https://orvionart.example');
         $publishedAt = now()->subDays(12)->startOfSecond();
         $draftEditedAt = now()->subMinute()->startOfSecond();
 
@@ -175,6 +177,7 @@ class SiteBuilderTest extends TestCase
     public function test_production_sitemap_experience_lastmod_uses_publication_timestamp(): void
     {
         config(['app.env' => 'production', 'app.url' => 'https://orvionart.example', 'orvionart.public_indexing_enabled' => true]);
+        \Illuminate\Support\Facades\URL::forceRootUrl('https://orvionart.example');
         $publishedAt = now()->subDays(8)->startOfSecond();
         $draftEditedAt = now()->subSeconds(30)->startOfSecond();
 
@@ -192,6 +195,7 @@ class SiteBuilderTest extends TestCase
     public function test_production_sitemap_excludes_external_canonical_urls_and_deduplicates_same_origin_canonicals(): void
     {
         config(['app.env' => 'production', 'app.url' => 'https://orvionart.example', 'orvionart.public_indexing_enabled' => true]);
+        \Illuminate\Support\Facades\URL::forceRootUrl('https://orvionart.example');
 
         foreach ([
             ['title' => 'Kanonik A', 'slug' => 'kanonik-a', 'canonical_url' => 'https://orvionart.example/tek-kanonik'],
@@ -217,6 +221,7 @@ class SiteBuilderTest extends TestCase
     public function test_scheduled_experience_sitemap_lastmod_uses_the_time_it_became_public(): void
     {
         config(['app.env' => 'production', 'app.url' => 'https://orvionart.example', 'orvionart.public_indexing_enabled' => true]);
+        \Illuminate\Support\Facades\URL::forceRootUrl('https://orvionart.example');
         \Illuminate\Support\Facades\URL::forceRootUrl('https://orvionart.example');
         $scheduledAt = now()->subMinutes(20)->startOfSecond();
         $stalePublishedAt = now()->subDays(20)->startOfSecond();

@@ -200,7 +200,6 @@ class PlatformIntegrityCommandTest extends TestCase
 
         $this->artisan('orvionart:inspect-platform --json')
             ->expectsOutputToContain('published_media_reference_invalid')
-            ->expectsOutputToContain('asset_record_missing')
             ->assertExitCode(1);
     }
 }

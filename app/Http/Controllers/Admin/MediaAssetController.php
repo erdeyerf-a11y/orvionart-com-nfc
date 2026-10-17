@@ -109,7 +109,9 @@ class MediaAssetController extends Controller
         $actualSize = filesize($path);
         if ($actualSize !== false) $headers['Content-Length'] = (string) $actualSize;
 
-        return response()->file($path, $headers);
+        $response = response()->file($path, $headers);
+        $response->headers->set('Cache-Control', 'private, no-store');
+        return $response;
     }
 
     /** Authenticated-only thumbnail delivery from the private managed-media area. */

@@ -123,6 +123,7 @@ while IFS= read -r -d '' file; do
   case "$rel" in
     .env.example) ;;
     .env|.env.*) fail "Teslimatta olmaması gereken ortam dosyası: $rel"; SECRET_FILES=$((SECRET_FILES+1));;
+    .phpunit.result.cache) ;;
   esac
 done < <(find "$ROOT" -type d \( -name vendor -o -name node_modules -o -name .git \) -prune -o -type f -print0)
 if [[ "$SECRET_FILES" -eq 0 ]]; then pass 'Gerçek .env dosyası bulunmadı'; fi

@@ -1,5 +1,14 @@
 # ORVIONART geliştirme durumu
 
+## 0.10.74 — Güncel doğrulama durumu (2026-10-17)
+
+- Kaynak sürümü: `0.10.74`; Git commiti, release manifesti ve kontrollü sunucu ZIP paketi hazırlanmıştır.
+- Composer bağımlılıkları kurulmuş ve Laravel runtime doğrulanmıştır.
+- Tam Feature test paketi: **204 test, 837 assertion — PASS**.
+- Release Gate: güncel kaynak ve regresyon kontrolleriyle yeniden çalıştırılmalıdır; tarihsel ZIP fixture bağımlılığı kaldırılmıştır.
+- Gerçek Plesk/MariaDB staging, gerçek URL, fiziksel QR/NFC, gerçek mobil cihaz, FFmpeg worker ve backup/restore kabulü bu ortamda yapılmamıştır.
+- Ödeme sistemi başlangıç kuralına uygun olarak pasiftir.
+
 Son kaynak sürüm: 0.10.70.
 
 ## 0.10.70 — Yedek manifesti doğrulama sertleştirmesi
@@ -89,8 +98,8 @@ Bu paket, modüler ORVIONART platformunun geliştirme kaynağıdır; gerçek sun
 - Otomatik test kaynakları eklendi, bu ortamda çalıştırılamadı.
 
 ## Doğrulama sınırları
-- PHP sözdizimi kontrolleri ve Composer JSON doğrulaması bu paket hazırlanırken çalıştırılır.
-- Composer bağımlılık kurulumu, Laravel runtime, veritabanı migration'ları, feature testleri, tarayıcı ve gerçek cihaz testleri bu ortamda tamamlanmış değildir.
+- PHP sözdizimi, Composer JSON, Composer bağımlılık kurulumu, Laravel runtime ve Feature testleri bu ortamda tamamlanmıştır.
+- Gerçek Plesk/MariaDB migration/rollback, HTTPS, tarayıcı/mobil cihaz, fiziksel QR/NFC, FFmpeg worker ve backup/restore kabul testleri gerçek sunucu erişimi olmadığından yapılmamıştır.
 - Gerçek sunucuya bağlantı/deploy yapılmamıştır.
 - Ödeme sistemi devre dışı ve uygulanmamış durumdadır.
 

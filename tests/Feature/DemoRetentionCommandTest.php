@@ -65,7 +65,7 @@ class DemoRetentionCommandTest extends TestCase
         $this->assertDatabaseMissing('demo_sessions', ['id' => $oldSession->id]);
         $this->assertDatabaseHas('demo_sessions', ['id' => $recentSession->id]);
         $this->assertDatabaseMissing('demo_events', ['id' => $oldEvent->id]);
-        $this->assertDatabaseHas('demo_events', ['id' => $recentEvent->id, 'demo_session_id' => null]);
+        $this->assertDatabaseHas('demo_events', ['id' => $recentEvent->id, 'demo_session_id' => $recentSession->id]);
     }
 
     public function test_recently_expired_session_is_retained_until_its_retention_period_passes(): void

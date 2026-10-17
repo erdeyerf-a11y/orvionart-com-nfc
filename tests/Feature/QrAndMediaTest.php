@@ -154,7 +154,7 @@ class QrAndMediaTest extends TestCase
         $this->get(route('qr.redirect', ['token' => $link->token]))
             ->assertRedirect($experience->publicUrl())
             ->assertHeader('Referrer-Policy', 'no-referrer')
-            ->assertHeader('Cache-Control', 'private, no-store, no-cache, must-revalidate')
+            ->assertHeader('Cache-Control', 'must-revalidate, no-cache, no-store, private')
             ->assertHeader('Pragma', 'no-cache')
             ->assertHeader('X-Robots-Tag', 'noindex, nofollow, noarchive')
             ->assertHeader('X-Content-Type-Options', 'nosniff');
@@ -226,7 +226,7 @@ class QrAndMediaTest extends TestCase
             ->assertOk()
             ->assertHeader('Content-Type', 'image/svg+xml; charset=UTF-8')
             ->assertHeader('X-Content-Type-Options', 'nosniff')
-            ->assertHeader('Cache-Control', 'private, no-store')
+            ->assertHeader('Cache-Control', 'no-store, private')
             ->assertSee('<svg', false);
     }
 
@@ -360,7 +360,7 @@ class QrAndMediaTest extends TestCase
             ->assertStatus(410)
             ->assertSee('Bu içeriğin erişim süresi sona erdi')
             ->assertHeader('X-Robots-Tag', 'noindex, nofollow, noarchive')
-            ->assertHeader('Cache-Control', 'private, no-store, no-cache, must-revalidate');
+            ->assertHeader('Cache-Control', 'must-revalidate, no-cache, no-store, private');
         $this->assertDatabaseHas('qr_links', ['id' => $link->id, 'scan_count' => 0, 'last_scanned_at' => null]);
     }
 
@@ -423,7 +423,7 @@ class QrAndMediaTest extends TestCase
             'title' => 'Vazo fotoğrafı',
             'alt_text' => 'Mavi beyaz vazo',
             'experience_id' => $experience->id,
-        ])->assertRedirect(route('admin.media.index'));
+        ])->assertRedirect(route('admin.experiences.edit', $experience));
 
         $asset = MediaAsset::firstOrFail();
         $this->assertSame('image', $asset->kind);
@@ -897,7 +897,7 @@ class QrAndMediaTest extends TestCase
             ->assertDownload()
             ->assertHeader('Content-Type', 'text/csv; charset=UTF-8')
             ->assertHeader('X-Content-Type-Options', 'nosniff')
-            ->assertHeader('Cache-Control', 'private, no-store, no-cache, must-revalidate');
+            ->assertHeader('Cache-Control', 'must-revalidate, no-cache, no-store, private');
         $csv = $response->streamedContent();
         $this->assertStringContainsString("\xEF\xBB\xBF", $csv);
         $this->assertStringContainsString("'=HYPERLINK", $csv);

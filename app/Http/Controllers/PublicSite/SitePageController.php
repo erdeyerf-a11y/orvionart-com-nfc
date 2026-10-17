@@ -48,7 +48,7 @@ class SitePageController extends Controller
                 ->get();
 
             foreach ($pages as $item) {
-                $loc = $item->published_canonical_url ?: $item->publicUrl();
+                $loc = $item->published_canonical_url ?: $this->configuredPublicUrl('/s/'.$item->published_slug);
                 if (!$this->isAllowedSitemapUrl($loc)) {
                     continue;
                 }
@@ -61,7 +61,7 @@ class SitePageController extends Controller
             })->get();
 
             foreach ($experiences as $item) {
-                $loc = route('experiences.public', ['publicId' => $item->public_id, 'slug' => $item->slug]);
+                $loc = $this->configuredPublicUrl('/p/'.$item->public_id.'/'.$item->slug);
                 if (!$this->isAllowedSitemapUrl($loc)) {
                     continue;
                 }
@@ -82,6 +82,11 @@ class SitePageController extends Controller
         $xml .= '</urlset>';
 
         return response($xml, 200, ['Content-Type' => 'application/xml; charset=UTF-8', 'Cache-Control' => 'public, max-age=300']);
+    }
+
+    private function configuredPublicUrl(string $path): string
+    {
+        return rtrim((string) config('app.url'), '/') . '/' . ltrim($path, '/');
     }
 
     /** Only absolute URLs on the configured application origin belong in this sitemap. */

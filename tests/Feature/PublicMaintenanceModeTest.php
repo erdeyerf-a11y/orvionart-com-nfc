@@ -26,7 +26,7 @@ class PublicMaintenanceModeTest extends TestCase
 
         $this->get('/')->assertStatus(503)->assertSee('Planlı bakım sürüyor.')
             ->assertHeader('X-Robots-Tag','noindex, nofollow, noarchive')
-            ->assertHeader('Cache-Control','no-store, no-cache, must-revalidate');
+            ->assertHeader('Cache-Control','must-revalidate, no-cache, no-store, private');
         $this->get('/demo')->assertStatus(503)->assertSee('Planlı bakım sürüyor.');
         $experience = Experience::create(['title'=>'Bakım deneyimi','slug'=>'bakim-deneyimi','status'=>'published','published_at'=>now()->subMinute()]);
         $link = QrLink::create(['experience_id'=>$experience->id,'label'=>'Bakım QR','is_active'=>true]);

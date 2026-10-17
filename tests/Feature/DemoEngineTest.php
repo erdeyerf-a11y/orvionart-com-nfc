@@ -65,7 +65,7 @@ class DemoEngineTest extends TestCase
             ->get(route('demo.media', ['content' => $content->id]));
         $response->assertOk();
         $response->assertHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
-        $response->assertHeader('Cache-Control', 'private, no-store, no-cache, must-revalidate');
+        $response->assertHeader('Cache-Control', 'must-revalidate, no-cache, no-store, private');
         $response->assertHeader('Referrer-Policy', 'no-referrer');
     }
 
@@ -137,6 +137,7 @@ class DemoEngineTest extends TestCase
     public function test_restarting_demo_expires_the_previous_device_journey(): void
     {
         DemoSetting::current()->update(['is_active' => true, 'journey_days' => 7]);
+        DemoContent::create(['title' => 'Yeniden başlatma içeriği', 'is_active' => true, 'sort_order' => 0]);
         $rawToken = str_repeat('c', 64);
         $previous = DemoSession::create([
             'device_token_hash' => hash('sha256', $rawToken),

@@ -9,7 +9,16 @@ expect_fail() { local label="$1"; shift; if "$@" >"$TMP/out" 2>&1; then cat "$TM
 
 # Use the current distributable source archive as a valid fixture.
 VALID="$TMP/valid.zip"
-cp "$ROOT/../ORVIONART_STAGE0_1_0_10_73.zip" "$VALID"
+SOURCE_ARCHIVE="${ORVIONART_VALID_ARCHIVE:-$ROOT/../ORVIONART_STAGE0_1_0_10_74_SERVER_READY.zip}"
+if [[ -f "$SOURCE_ARCHIVE" ]]; then
+  cp "$SOURCE_ARCHIVE" "$VALID"
+elif git -C "$ROOT" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  # Keep the regression suite self-contained when historical ZIP fixtures are absent.
+  git -C "$ROOT" archive --format=zip --prefix=ORVIONART_STAGE0_1_0_10_74/ -o "$VALID" HEAD
+else
+  echo "Geçerli ZIP fixture bulunamadı; ORVIONART_VALID_ARCHIVE ayarlayın." >&2
+  exit 1
+fi
 SHA="$(sha256sum "$VALID" | awk '{print $1}')"
 expect_pass 'valid release archive passes preflight' bash "$ROOT/scripts/update-package-preflight.sh" "$VALID" "$SHA"
 expect_fail 'incorrect checksum rejected' bash "$ROOT/scripts/update-package-preflight.sh" "$VALID" "$(printf '0%.0s' {1..64})"

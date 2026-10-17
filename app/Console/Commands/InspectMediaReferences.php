@@ -71,6 +71,7 @@ class InspectMediaReferences extends Command
             'disk_checked' => self::DISK,
             'managed_prefixes' => self::MANAGED_PREFIXES,
             'counts' => $counts,
+            'issue_codes' => array_values(array_unique(array_map(static fn (array $issue): string => (string) ($issue['code'] ?? 'unknown'), $issues))),
             'issues' => array_slice($issues, 0, 100),
             'issues_truncated' => count($issues) > 100,
             'warnings' => $warnings,

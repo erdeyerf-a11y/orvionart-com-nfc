@@ -40,7 +40,7 @@ Route::get('/sitemap.xml', [SitePageController::class, 'sitemap'])->name('sitema
 Route::get('/robots.txt', function () {
     $indexingEnabled = config('app.env') === 'production' && (bool) config('orvionart.public_indexing_enabled', false);
     $body = $indexingEnabled
-        ? "User-agent: *\nAllow: /\nSitemap: " . route('sitemap') . "\n"
+        ? "User-agent: *\nAllow: /\nSitemap: " . rtrim((string) config('app.url'), '/') . "/sitemap.xml\n"
         : "User-agent: *\nDisallow: /\n";
     return response($body, 200, ['Content-Type' => 'text/plain; charset=UTF-8', 'Cache-Control' => 'no-store']);
 })->name('robots');

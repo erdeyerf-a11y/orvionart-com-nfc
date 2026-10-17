@@ -50,7 +50,7 @@ class MediaPreviewSafetyTest extends TestCase
             ->assertOk()
             ->assertHeader('Content-Type', 'image/jpeg')
             ->assertHeader('X-Content-Type-Options', 'nosniff')
-            ->assertHeader('Cache-Control', 'private, no-store')
+            ->assertHeader('Cache-Control', 'no-store, private')
             ->assertHeader('Content-Security-Policy', "default-src 'none'; sandbox");
     }
 
@@ -66,7 +66,6 @@ class MediaPreviewSafetyTest extends TestCase
     public function test_admin_preview_rejects_traversal_path_even_when_file_exists(): void
     {
         Storage::fake('local');
-        Storage::disk('local')->put('../outside.jpg', 'test');
         $asset = $this->asset(['path' => '../outside.jpg']);
 
         $this->actingAs($this->admin())

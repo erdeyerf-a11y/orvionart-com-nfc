@@ -210,6 +210,10 @@ class InspectPlatformIntegrity extends Command
             'generated_at' => $now->toIso8601String(),
             'read_only' => true,
             'scope' => ['experience', 'qr_nfc', 'media', 'site_builder', 'usage_right_registry'],
+            'problem_codes' => array_values(array_unique(array_merge(
+                array_map(static fn (array $item): string => (string) ($item['problem'] ?? ''), $publishedMediaProblems),
+                array_map(static fn (array $item): string => (string) ($item['problem'] ?? ''), $historicalRevisionMediaProblems),
+            ))),
             'counts' => [
                 'experiences_total' => Experience::withTrashed()->count(),
                 'experiences_publicly_available' => $publishedExperiences->count(),
@@ -236,6 +240,10 @@ class InspectPlatformIntegrity extends Command
                 'published_media_reference_problems' => $publishedMediaProblems,
                 'historical_revision_media_reference_problems' => $historicalRevisionMediaProblems,
                 'redirect_ids_with_unavailable_target' => $brokenRedirectIds,
+                'problem_codes' => array_values(array_unique(array_merge(
+                    array_map(static fn (array $item): string => (string) ($item['problem'] ?? ''), $publishedMediaProblems),
+                    array_map(static fn (array $item): string => (string) ($item['problem'] ?? ''), $historicalRevisionMediaProblems),
+                ))),
             ],
             'warnings' => $warnings,
             'limitations' => [

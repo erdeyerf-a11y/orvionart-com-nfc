@@ -2,9 +2,9 @@
     "format": "orvionart-release-manifest-v1",
     "application": "ORVIONART",
     "version": "0.10.74",
-    "generated_at_utc": "2026-10-16T14:46:20Z",
+    "generated_at_utc": "2026-10-17T09:23:26Z",
     "manifest_scope": "Distributable source files only; excludes secrets, runtime data, vendor, historical ZIPs, and this manifest.",
-    "file_count": 289,
+    "file_count": 290,
     "files": {
         ".env.example": {
             "bytes": 1971,
@@ -39,20 +39,20 @@
             "sha256": "7312c45a0f9d6c5491b73f6d55d10bed9fbb5bb57a463edb73def40ae2007fe6"
         },
         "app/Console/Commands/InspectDemoLifecycle.php": {
-            "bytes": 5022,
-            "sha256": "c614640061083784afd14faf19efead791e848bfe9fc6d95f4ee5de79bab8b4c"
+            "bytes": 5171,
+            "sha256": "5d6206486ff36990ec003cf44887961a0dd67324c2eefe3675f08c47a41efab3"
         },
         "app/Console/Commands/InspectMediaReferences.php": {
-            "bytes": 7483,
-            "sha256": "a67cd5b56d69f54b5861a231a033b581fd14a1611686cb51d74ff05d013748d5"
+            "bytes": 7636,
+            "sha256": "e3be410ddbd75425e54bb04bbfa4918c201dfabb3eb8ce74eafb16bb5b56887e"
         },
         "app/Console/Commands/InspectMediaStorage.php": {
-            "bytes": 5960,
-            "sha256": "295a1b9ac1807d6df2544c05694389e443c45dd20ff928b0b95ecca1a2e6fe74"
+            "bytes": 6240,
+            "sha256": "4b3c07d2329985d9115931b67b15c440924721a9e7113f06ae08e40b206d77d7"
         },
         "app/Console/Commands/InspectPlatformIntegrity.php": {
-            "bytes": 15650,
-            "sha256": "c6cced884456f0d29fdaa225af9ea25ad6f7b718e58997058ab7e44fad37ab89"
+            "bytes": 16346,
+            "sha256": "2fda0b0b41d9bbcc9b3773f450907a4e644c886dee0f4bc15f7e09418f91dc26"
         },
         "app/Console/Commands/InspectQrLifecycle.php": {
             "bytes": 6809,
@@ -99,8 +99,8 @@
             "sha256": "cfc6a9c81d14918c250007d193ad872e75426d5511f968c4122579fa97e35c9a"
         },
         "app/Http/Controllers/Admin/MediaAssetController.php": {
-            "bytes": 21893,
-            "sha256": "a723a2b541ee028436d671c3316c4f1f86a0a6e9043de7cd78610f8a342cf42f"
+            "bytes": 21995,
+            "sha256": "90d88170d6dd7f464d437e34d194ae67a2accbeef7e73990ae8008f67e3b53bf"
         },
         "app/Http/Controllers/Admin/QrLinkController.php": {
             "bytes": 12927,
@@ -147,8 +147,8 @@
             "sha256": "01dab3554fee63eb23df5329f0d5a9a9e0082230c2d5562b12c9a65ee2c015bf"
         },
         "app/Http/Controllers/PublicSite/SitePageController.php": {
-            "bytes": 8922,
-            "sha256": "b8aee694f02b96b460f2f0d27b3936224363090e808624cd0b1ce1a2d4167bd4"
+            "bytes": 9098,
+            "sha256": "2aea0602506bc85e995bff5115666dee7d31dc8f2b162d3cadf2965722e95431"
         },
         "app/Http/Middleware/EnsureSuperAdmin.php": {
             "bytes": 635,
@@ -471,8 +471,8 @@
             "sha256": "73f87d57c50243bbbf7a1ee9d95a0a758eea889ffca9a0cca9a7e7b6208fa9a4"
         },
         "docs/DEVELOPMENT_STATUS.md": {
-            "bytes": 15701,
-            "sha256": "027127ebb07c40f8a359cb747e769a923fe97d526a8b35a0ed23c39ee75b9c8f"
+            "bytes": 16439,
+            "sha256": "f40a5b713b8da5dceab706e526254e722f035c248e90d4b68355842fc2252f75"
         },
         "docs/ENVIRONMENT_TEMPLATE_0_10_42.md": {
             "bytes": 1585,
@@ -487,8 +487,8 @@
             "sha256": "c30e0fe6a6ca67f0b8cc70b742f92c40ee86b0351aa929c3d9f13bc6dfaae0b6"
         },
         "docs/INSTALL_STAGING.md": {
-            "bytes": 4737,
-            "sha256": "95443012f84827f871eb2a0060c07153d54c252a5e8e03886c534efc3d41b5fd"
+            "bytes": 4659,
+            "sha256": "4b18e0b05933c73c3fdee1692af533183d6e98c93af0eb3f82fc1295550cdf18"
         },
         "docs/MANUS_FINAL_HANDOFF_TEMPLATE.txt": {
             "bytes": 1130,
@@ -782,6 +782,10 @@
             "bytes": 1204,
             "sha256": "31a41858b98f15793927fbbf5e16d2877cf5c4a4d9dddbbfcc55a11c02331b47"
         },
+        "docs/TXT_GAP_REVIEW_0_10_74.md": {
+            "bytes": 8946,
+            "sha256": "3d3937053d5524ee3df9213846cdca058ae53b44e79b22b03d789cbd1ce063b5"
+        },
         "docs/UPDATE_PACKAGE_PREFLIGHT_0_10_74.md": {
             "bytes": 1943,
             "sha256": "14ed7fe258ca4b55204ada800872e974cde104529152061c2207dc6026b859f7"
@@ -863,8 +867,8 @@
             "sha256": "9f6fa9ea36b9ab1d465967ac57794c8fbc4fcab0eb68e2504264823078063466"
         },
         "docs/V1_5_GAP_MATRIX_0_10_74.md": {
-            "bytes": 2696,
-            "sha256": "9f3ca35cf8204ca67fd1ed6a00ccaaaed6b544433366e19e862c92027aa76fc5"
+            "bytes": 2725,
+            "sha256": "0e0271cce26ad0822edbe7f8efe7576cc6a9c3b40384bb1c92da5af68425c248"
         },
         "docs/VIDEO_PROCESSING_QUEUE_0_10_51.md": {
             "bytes": 4401,
@@ -899,8 +903,8 @@
             "sha256": "02b11546c29cd76897e80249ff65fe0631b7eb26ba0924fab41ef446ec8ac3d9"
         },
         "resources/views/admin/experiences/form.blade.php": {
-            "bytes": 11439,
-            "sha256": "3c364be35d84f38b47670dbdcf119943a0796f46dc9e2bb3f6fb3851c2b584b4"
+            "bytes": 11445,
+            "sha256": "015a6bc963a0db146d2d3b0d9f2f96a4e1d6870430276040a6176ed51060e18e"
         },
         "resources/views/admin/experiences/index.blade.php": {
             "bytes": 6128,
@@ -983,8 +987,8 @@
             "sha256": "4a78216c25196800563750a30f57050a71cdf8319ff082ed1cfc10772d331063"
         },
         "routes/web.php": {
-            "bytes": 10282,
-            "sha256": "4ad60f3b9662b91f771cf44da523e994352f0697b543e9415ef111491df85db8"
+            "bytes": 10316,
+            "sha256": "00f3c7d1c81f5465e121699c08f92b475d1d8f2b5d565acf1d984c4ad8c82f9b"
         },
         "scripts/audit-migrations.php": {
             "bytes": 4662,
@@ -1003,8 +1007,8 @@
             "sha256": "3a6300cf82353ad657ae8e4e0606ecf4e3e57d4f5654282ac827a924c3747ba9"
         },
         "scripts/release-gate.sh": {
-            "bytes": 55832,
-            "sha256": "7af9975ec0044cc479a8e4e948a8d6eecf0924e7692d33fb0ab8b8709d0e8afb"
+            "bytes": 55862,
+            "sha256": "33290ec09114c593f2507000883ec04f7b3150fb1653f0f8848d1f86af158734"
         },
         "scripts/release-manifest.php": {
             "bytes": 6313,
@@ -1031,8 +1035,8 @@
             "sha256": "1ec3c09c9847c671d74a7fcefc7d35e7e58d32b1a0352fe5eab63c6c3bc45ef5"
         },
         "scripts/test-update-package-preflight.sh": {
-            "bytes": 2864,
-            "sha256": "a4712e5cccddfc5eee9946fadeb79ce93b0df67e47958733f162e9ef1b571b33"
+            "bytes": 3328,
+            "sha256": "c5baf055737becd99a978ebe096e54bb76f6fcda6f15af3f9374d25f5a2332ff"
         },
         "scripts/test-verify-backup.sh": {
             "bytes": 5871,
@@ -1071,20 +1075,20 @@
             "sha256": "36f0f3c9a2aac75f9f5a15a976694456e4c7fa39d3a6dac6e8e55779f171b889"
         },
         "tests/Feature/DemoEngineTest.php": {
-            "bytes": 12115,
-            "sha256": "e9382f7a2e29128c8098667bff68c5a85cd6a1ff9f586b376288c61e82492fde"
+            "bytes": 12228,
+            "sha256": "d3be10c7229c9c2d831310d8e88d267431c98c5ada98ce547dfbb9fb830abb32"
         },
         "tests/Feature/DemoInspectionCommandTest.php": {
             "bytes": 1859,
             "sha256": "03fe4790cd22cd4c958c6dcf5989d3be1dbffe67fd12166de6b6b57d5c10e296"
         },
         "tests/Feature/DemoLifecycleInspectionTest.php": {
-            "bytes": 4721,
-            "sha256": "48fe1470a87449e45b3eda8bec121ac1a1f4f232467250c3da84f024471d98f4"
+            "bytes": 4598,
+            "sha256": "7d909793c98f0993617f71ca47fa3365e37f11d809410cdc3644d1bd5bbea9ed"
         },
         "tests/Feature/DemoRetentionCommandTest.php": {
-            "bytes": 3463,
-            "sha256": "d0e2e3189a27384ab675aad942fd8a25b0a93c7210621b48cf1174381a93a153"
+            "bytes": 3477,
+            "sha256": "3a2edb32f3f6f8369244ff099d75680cf355d2ec33f9320b2a29fc3d364a5049"
         },
         "tests/Feature/ExperienceManagementTest.php": {
             "bytes": 6801,
@@ -1095,32 +1099,32 @@
             "sha256": "153fb4e568e1d35ea0eda9ce33e72a15c5497b09333f3bc3a77efb1c4ea889a0"
         },
         "tests/Feature/MediaPreviewSafetyTest.php": {
-            "bytes": 2940,
-            "sha256": "0f0db8ebadc26ea8157de994739d8a22ba730b821057df20c13d164c1d49ac9d"
+            "bytes": 2877,
+            "sha256": "023e13da51b5be4fea5e12a8c6e1943a08296aabb7380ce551ce20599905c884"
         },
         "tests/Feature/MediaReferenceInspectionTest.php": {
-            "bytes": 5010,
-            "sha256": "06ae1944640864c7293fb5c9b7cb8c5327eff633cedbd2608085011b3f1b2b38"
+            "bytes": 4806,
+            "sha256": "b89722cab278f678ba5c18ffb70c73ad1ab3a3f95fbee6c4fc5557a85a40d2d6"
         },
         "tests/Feature/MediaStorageInspectionTest.php": {
-            "bytes": 2521,
-            "sha256": "4699cb1c8063e6fa1c2716f957d7437502e9765aabad0b80141a548f7578f1fd"
+            "bytes": 2362,
+            "sha256": "9df51964d2789e7cd2506284d9fb494e3664ce5b084888fb5774d75d9a1082cb"
         },
         "tests/Feature/PlatformIntegrityCommandTest.php": {
-            "bytes": 8303,
-            "sha256": "77e958782eadabd954b68c0328eb5427f4c0d029b140a9a35673ae1f0727c032"
+            "bytes": 8242,
+            "sha256": "e130609860b4e8ff7751258e0e3b1dd50b802165d04f516b1d870dfade188305"
         },
         "tests/Feature/PublicExperiencePlayerTest.php": {
             "bytes": 5466,
-            "sha256": "1975c832aa71df06f8931b9ca9955cd71509b80e034c4636cdea7464667fa8cc"
+            "sha256": "e006ad2ac9b5336ba623317a789554f1674b4ee2ee4d4e1c9add9c51c0f56ca2"
         },
         "tests/Feature/PublicMaintenanceModeTest.php": {
-            "bytes": 2496,
-            "sha256": "ba0b620396b2abf2e6226a574d110dac05656d908d6750db15ee8d4cc5cdc2cf"
+            "bytes": 2505,
+            "sha256": "7c8512c2177b3f3e9703be84f5ce2129ea79c6f724e6a10070b50721f9895951"
         },
         "tests/Feature/QrAndMediaTest.php": {
-            "bytes": 36628,
-            "sha256": "d4cca1db8d2c21f1fb6ec65852e5851fdf2231569e89d760db0c28ca6412103a"
+            "bytes": 36646,
+            "sha256": "d8e2b3924c518e9b5de5a7a966a5dbcdd25ed0c9770c92926d893f5bc4ecc0c2"
         },
         "tests/Feature/QrLifecycleInspectionTest.php": {
             "bytes": 3841,
@@ -1135,8 +1139,8 @@
             "sha256": "ef83b38114698570dde5ab44c7114d010bc9bd1ae8d75aa05113cb0b2268f3af"
         },
         "tests/Feature/SiteBuilderTest.php": {
-            "bytes": 57764,
-            "sha256": "714ed3e231a8b4e143fa8f49da5d1e4a60f92c43dcc1163196118ffd82a66afb"
+            "bytes": 58184,
+            "sha256": "44f6f47b325be685753cf14c236a854b6c50edc4cf156c76a17e13b5ede344f7"
         },
         "tests/Feature/SiteRedirectInspectionTest.php": {
             "bytes": 3602,
@@ -1159,8 +1163,8 @@
             "sha256": "7cf3a71625f4e4a7b4cf4525c75d6a4a6b2f3c39cb5a4f61d8e05671299c62f0"
         },
         "tests/TestCase.php": {
-            "bytes": 446,
-            "sha256": "f8e1bb406b837b19e16eebd97a248c44e266d487326805ae6b83e272cdefbd4c"
+            "bytes": 790,
+            "sha256": "928d84c27bcf184c83b70ed4458694cda2aedbd39cd6217aeace65b71df3c110"
         }
     }
 }

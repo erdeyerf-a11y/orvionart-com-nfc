@@ -1,4 +1,4 @@
-# ORVIONART 0.10.57 — Kontrollü Plesk staging kurulum kontrol listesi
+# ORVIONART 0.10.74 — Kontrollü Plesk staging kurulum kontrol listesi
 
 ## Kurulumun amacı ve sınırlar
 Bu paket kaynak kod teslimatıdır; `vendor/`, gerçek `.env`, veritabanı parolaları ve üretim anahtarları ZIP içinde bulunmaz. Kurulumu yapacak kişi Composer bağımlılıklarını hedef sunucuda kurmalı, yeni ve ayrı bir staging veritabanı kullanmalı ve ilk Süper Admin hesabını etkileşimli olarak oluşturmalıdır. Bu dosya gerçek sunucuya erişildiği veya kurulumun tamamlandığı anlamına gelmez.
@@ -14,7 +14,7 @@ Bu paket kaynak kod teslimatıdır; `vendor/`, gerçek `.env`, veritabanı parol
 
 ## Kurulum
 - [ ] Copy `.env.example` to `.env` outside public web access; never commit real `.env`.
-- [ ] Kaynak kökünde `composer install --no-dev --prefer-dist --optimize-autoloader` çalıştır. `composer.lock` kaynak paketinde yoksa bağımlılık sürümleri henüz sabitlenmemiş demektir; kurulumdan sonra lock dosyasını teslimat kaydına dahil et ve aynı bağımlılık setiyle test et.
+- [ ] Kaynak kökünde `composer install --no-dev --prefer-dist --optimize-autoloader` çalıştır. `composer.lock` kaynak paketinde mevcuttur; kurulumda lock dosyasına sadık kal ve aynı bağımlılık setiyle test et.
 - [ ] Generate unique app key; set DB credentials, staging URL, `APP_ENV=staging`, `APP_DEBUG=false`, `SESSION_SECURE_COOKIE=true`.
 - [ ] Önce `php scripts/preflight.php --check-db` çalıştır. Hedefin yeni ve doğru staging veritabanı olduğu bağımsız şekilde doğrulandıktan sonra `php artisan migrate --force` çalıştır. Gerçek/canlı veritabanında `migrate:fresh` kullanma.
 - [ ] `php artisan orvionart:create-super-admin` komutunu etkileşimli çalıştır; parolayı komut argümanına, dosyaya veya yazışmaya koyma.

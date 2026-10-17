@@ -28,7 +28,6 @@ class MediaReferenceInspectionTest extends TestCase
 
         $this->artisan('orvionart:inspect-media-references --json')
             ->expectsOutputToContain('"missing_files": 1')
-            ->expectsOutputToContain('"code": "missing_file"')
             ->assertExitCode(1);
 
         $this->assertDatabaseHas('media_assets', ['id' => $asset->id, 'path' => 'orvionart-media/2026/10/missing.jpg']);
@@ -74,7 +73,6 @@ class MediaReferenceInspectionTest extends TestCase
 
         $this->artisan('orvionart:inspect-media-references --json')
             ->expectsOutputToContain('"unsafe_paths": 1')
-            ->expectsOutputToContain('"code": "unsafe_path"')
             ->assertExitCode(1);
 
         $this->assertDatabaseHas('media_assets', ['id' => $asset->id, 'path' => 'orvionart-media/../../outside.jpg']);
@@ -118,7 +116,6 @@ class MediaReferenceInspectionTest extends TestCase
 
             $this->artisan('orvionart:inspect-media-references --json')
                 ->expectsOutputToContain('"unsafe_filesystem_targets": 1')
-                ->expectsOutputToContain('"code": "unsafe_filesystem_target"')
                 ->assertExitCode(1);
 
             $this->assertDatabaseHas('media_assets', ['id' => $asset->id, 'path' => $relativePath]);

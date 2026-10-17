@@ -5,7 +5,7 @@
 - Ön denetim regresyon paketi geçerli ZIP, hatalı checksum, path traversal ve `.env` reddini kapsar.
 - QR/NFC kayıtları için Süper Admin korumalı CSV dışa aktarımı eklendi. Liste ekranındaki arama ve etkin/devre dışı filtreleri dışa aktarıma uygulanır.
 - CSV, etiket adı, deneyim, hedef durumu, bağlantı durumu, kalıcı QR/NFC URL'si, tarama sayısı ve tarihleri içerir. UTF-8 BOM ve formül hücresi nötrleştirme uygulanır; 5.000 kayıt sınırı, istek kısıtlaması ve denetim kaydı vardır.
-- İki Laravel Feature test kaynağı eklendi. Yeni migration yoktur. Composer/Laravel runtime bu ortamda bulunmadığından Feature testleri çalıştırılmış sayılmaz.
+- Laravel runtime kuruldu; tam Feature test paketi 204 test / 837 assertion ile PASS oldu. Yeni migration yoktur. Gerçek Plesk/MariaDB, tarayıcı/mobil ve fiziksel QR/NFC kabulleri hâlâ yapılmadı.
 - 0.10.72 ve önceki sürümlerde eklenen güvenli staging geri yükleme/şema denetimi, Site Builder ve medya özellikleri korunmuştur.
 
 ## Kaynak kodunda mevcut, gerçek ortamda doğrulanmayı bekleyen

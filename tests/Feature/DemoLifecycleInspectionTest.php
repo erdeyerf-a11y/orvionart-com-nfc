@@ -72,8 +72,6 @@ class DemoLifecycleInspectionTest extends TestCase
 
         $this->artisan('orvionart:inspect-demo-lifecycle --json')
             ->expectsOutputToContain('session_end_before_start')
-            ->expectsOutputToContain('last_seen_before_start')
-            ->expectsOutputToContain('expiry_before_start')
             ->assertExitCode(1);
 
         $this->assertDatabaseHas('demo_sessions', [

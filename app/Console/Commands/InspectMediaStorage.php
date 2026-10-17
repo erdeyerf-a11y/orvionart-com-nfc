@@ -84,6 +84,8 @@ class InspectMediaStorage extends Command
             'read_only' => true,
             'disk_checked' => $diskName,
             'scope' => self::MANAGED_PREFIXES,
+            'unreferenced_paths' => array_values(array_map(static fn (array $item): string => (string) ($item['path'] ?? ''), $orphanedFiles)),
+            'quarantined_paths' => array_values($quarantinedFiles),
             'counts' => [
                 'media_asset_records_on_local_disk' => MediaAsset::query()->where('disk', $diskName)->count(),
                 'demo_content_records_on_local_disk' => DemoContent::query()->where('media_disk', $diskName)->whereNotNull('media_path')->count(),
@@ -93,6 +95,7 @@ class InspectMediaStorage extends Command
             ],
             'unreferenced_files' => $orphanedFiles,
             'quarantined_files' => array_map(static fn (string $path): array => ['disk' => $diskName, 'path' => $path], $quarantinedFiles),
+            'quarantined_paths' => array_values($quarantinedFiles),
             'warnings' => $warnings,
             'limitations' => [
                 'Bu komut dosya veya veritabanı kaydı silmez, değiştirmez ya da taşımaz.',

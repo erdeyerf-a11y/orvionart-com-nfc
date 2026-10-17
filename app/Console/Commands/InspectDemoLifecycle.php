@@ -17,10 +17,10 @@ class InspectDemoLifecycle extends Command
             ->whereColumn('ends_at', '<', 'started_at');
         $lastSeenBeforeStart = DB::table('demo_sessions')
             ->whereNotNull('last_seen_at')
-            ->whereColumn('last_seen_at', '<', 'started_at');
+            ->whereRaw('datetime(last_seen_at) < datetime(started_at)');
         $expiryBeforeStart = DB::table('demo_sessions')
             ->whereNotNull('expired_at')
-            ->whereColumn('expired_at', '<', 'started_at');
+            ->whereRaw('datetime(expired_at) < datetime(started_at)');
 
         $assignmentOutsideSession = DB::table('demo_daily_assignments as assignment')
             ->join('demo_sessions as session', 'session.id', '=', 'assignment.demo_session_id')
@@ -58,6 +58,7 @@ class InspectDemoLifecycle extends Command
             'version' => trim((string) @file_get_contents(base_path('VERSION'))),
             'generated_at' => now()->toIso8601String(),
             'read_only' => true,
+            'invalid_check_codes' => array_keys(array_filter($checks, static fn (array $check): bool => $check['count'] > 0)),
             'checks' => $checks,
             'warnings' => $warnings,
             'limitations' => [

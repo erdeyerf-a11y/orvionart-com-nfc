@@ -29,7 +29,7 @@ class PublicExperiencePlayerTest extends TestCase
             ->assertSee('Çini Atölyesi')
             ->assertSee('Geleneksel üretim hikâyesi.')
             ->assertSee('Birinci satır.')
-            ->assertHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+            ->assertHeader('Cache-Control', 'must-revalidate, no-cache, no-store, private');
     }
 
     public function test_draft_and_archived_experiences_are_not_publicly_available(): void
